@@ -1,27 +1,21 @@
-package net.torocraft.torohealth.network;
+package net.torocraft.torohud.network;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Collection;
-import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.potion.PotionEffect;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import net.torocraft.torohealth.ToroHealth;
+import net.torocraft.torohud.ToroHUD;
 
 public class MessageEntityStatsRequest implements IMessage {
 
   public int id;
 
   public static void init(int packetId) {
-    ToroHealth.NETWORK.registerMessage(Handler.class, MessageEntityStatsRequest.class, packetId, Side.SERVER);
+    ToroHUD.NETWORK.registerMessage(Handler.class, MessageEntityStatsRequest.class, packetId, Side.SERVER);
   }
 
   public MessageEntityStatsRequest() {
@@ -59,7 +53,7 @@ public class MessageEntityStatsRequest implements IMessage {
       EntityLivingBase entityLiving = (EntityLivingBase)entity;
 
       MessageEntityStatsResponse reply = new MessageEntityStatsResponse(message.id, entityLiving.getActivePotionEffects());
-      ToroHealth.NETWORK.sendTo(reply, player);
+      ToroHUD.NETWORK.sendTo(reply, player);
     }
   }
 

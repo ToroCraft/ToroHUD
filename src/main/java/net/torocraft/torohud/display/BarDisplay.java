@@ -1,14 +1,14 @@
-package net.torocraft.torohealth.display;
+package net.torocraft.torohud.display;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.torocraft.torohealth.ToroHealth;
+import net.torocraft.torohud.ToroHUD;
 
-public class BarDisplay extends AbstractHealthDisplay implements ToroHealthDisplay {
+public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
 
-  private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation(ToroHealth.MODID, "textures/gui/bars.png");
+  private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation(ToroHUD.MODID, "textures/gui/bars.png");
 
   private static final int BAR_WIDTH = 92;
 

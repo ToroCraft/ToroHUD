@@ -1,10 +1,10 @@
-package net.torocraft.torohealth.config;
+package net.torocraft.torohud.config;
 
 import java.io.File;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.torocraft.torohealth.ToroHealth;
+import net.torocraft.torohud.ToroHUD;
 
 public class ConfigurationHandler {
 
@@ -12,7 +12,6 @@ public class ConfigurationHandler {
 
   public static boolean showEntityModel;
   public static boolean showDamageParticles;
-  public static boolean enableClientSideDamageParticles;
   public static String entityStatusDisplay;
   public static String statusDisplayPosition;
   public static String skin;
@@ -40,8 +39,6 @@ public class ConfigurationHandler {
       statusDisplayY = config.getInt("Health Bar Y", Configuration.CATEGORY_CLIENT, 0, -20000, 20000, "With CUSTOM position, sets Y position of Health Bar");
       hideDelay = config.getInt("Hide Delay", Configuration.CATEGORY_CLIENT, 400, 50, 5000, "Delays hiding the dialog for the given number of milliseconds");
       showDamageParticles = config.getBoolean("Show Damage Particles", Configuration.CATEGORY_CLIENT, true, "Show Damage Indicators");
-      enableClientSideDamageParticles = config.getBoolean("Enable Client Side Damage Particles", Configuration.CATEGORY_CLIENT, false,
-          "Set to true if you would like to see the damage numbers but do not have this mod installed on the server");
       healColor = mapColor(config.getString("Heal Color", Configuration.CATEGORY_CLIENT, "GREEN", "Heal Text Color", acceptedColors));
       damageColor = mapColor(config.getString("Damage Color", Configuration.CATEGORY_CLIENT, "RED", "Damage Text Color", acceptedColors));
     } catch (Exception e) {
@@ -76,7 +73,7 @@ public class ConfigurationHandler {
 
   @SubscribeEvent
   public void onConfigChangeEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-    if (event.getModID().equalsIgnoreCase(ToroHealth.MODID)) {
+    if (event.getModID().equalsIgnoreCase(ToroHUD.MODID)) {
       loadConfiguration();
     }
   }

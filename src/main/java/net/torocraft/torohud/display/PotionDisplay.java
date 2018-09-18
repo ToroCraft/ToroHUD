@@ -1,15 +1,14 @@
-package net.torocraft.torohealth.display;
+package net.torocraft.torohud.display;
 
 import java.util.Collection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.torocraft.torohealth.gui.GuiEntityStatus;
-import net.torocraft.torohealth.network.MessageEntityStatsResponse;
+import net.torocraft.torohud.gui.GuiEntityStatus;
+import net.torocraft.torohud.network.MessageEntityStatsResponse;
 
-public class PotionDisplay extends AbstractHealthDisplay implements ToroHealthDisplay {
+public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
 
   private final Minecraft mc;
   private final Gui gui;

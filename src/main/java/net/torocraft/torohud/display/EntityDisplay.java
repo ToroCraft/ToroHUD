@@ -1,4 +1,4 @@
-package net.torocraft.torohealth.display;
+package net.torocraft.torohud.display;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,7 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.util.math.MathHelper;
 
-public class EntityDisplay implements ToroHealthDisplay {
+public class EntityDisplay implements IDisplay {
 
   private static final int RENDER_HEIGHT = 30;
   private static final int RENDER_WIDTH = 18;

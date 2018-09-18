@@ -1,4 +1,4 @@
-package net.torocraft.torohealth.network;
+package net.torocraft.torohud.network;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.torohealth.ToroHealth;
+import net.torocraft.torohud.ToroHUD;
 
 public class MessageEntityStatsResponse implements IMessage {
 
@@ -26,7 +26,7 @@ public class MessageEntityStatsResponse implements IMessage {
   private Collection<PotionEffect> potions;
 
   public static void init(int packetId) {
-    ToroHealth.NETWORK.registerMessage(Handler.class, MessageEntityStatsResponse.class, packetId, Side.CLIENT);
+    ToroHUD.NETWORK.registerMessage(Handler.class, MessageEntityStatsResponse.class, packetId, Side.CLIENT);
   }
 
   public MessageEntityStatsResponse() {

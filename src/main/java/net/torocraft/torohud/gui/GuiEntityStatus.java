@@ -1,4 +1,4 @@
-package net.torocraft.torohealth.gui;
+package net.torocraft.torohud.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -9,27 +9,27 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.torocraft.torohealth.ToroHealth;
-import net.torocraft.torohealth.config.ConfigurationHandler;
-import net.torocraft.torohealth.display.BarDisplay;
-import net.torocraft.torohealth.display.EntityDisplay;
-import net.torocraft.torohealth.display.HeartsDisplay;
-import net.torocraft.torohealth.display.NumericDisplay;
-import net.torocraft.torohealth.display.PotionDisplay;
-import net.torocraft.torohealth.display.ToroHealthDisplay;
+import net.torocraft.torohud.ToroHUD;
+import net.torocraft.torohud.config.ConfigurationHandler;
+import net.torocraft.torohud.display.BarDisplay;
+import net.torocraft.torohud.display.EntityDisplay;
+import net.torocraft.torohud.display.HeartsDisplay;
+import net.torocraft.torohud.display.NumericDisplay;
+import net.torocraft.torohud.display.PotionDisplay;
+import net.torocraft.torohud.display.IDisplay;
 
 public class GuiEntityStatus extends Gui {
 
   private static final int PADDING_FROM_EDGE = 3;
-  private static final ResourceLocation SKIN_BASIC = new ResourceLocation(ToroHealth.MODID, "textures/gui/default_skin_basic.png");
-  private static final ResourceLocation SKIN_HEAVY = new ResourceLocation(ToroHealth.MODID, "textures/gui/default_skin_heavy.png");
+  private static final ResourceLocation SKIN_BASIC = new ResourceLocation(ToroHUD.MODID, "textures/gui/default_skin_basic.png");
+  private static final ResourceLocation SKIN_HEAVY = new ResourceLocation(ToroHUD.MODID, "textures/gui/default_skin_heavy.png");
 
   private final Minecraft mc;
-  private final ToroHealthDisplay entityDisplay;
-  private final ToroHealthDisplay potionDisplay;
-  private final ToroHealthDisplay heartsDisplay;
-  private final ToroHealthDisplay numericDisplay;
-  private final ToroHealthDisplay barDisplay;
+  private final IDisplay entityDisplay;
+  private final IDisplay potionDisplay;
+  private final IDisplay heartsDisplay;
+  private final IDisplay numericDisplay;
+  private final IDisplay barDisplay;
   int screenX = PADDING_FROM_EDGE;
   int screenY = PADDING_FROM_EDGE;
   int displayHeight;

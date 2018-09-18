@@ -1,8 +1,8 @@
-package net.torocraft.torohealth.display;
+package net.torocraft.torohud.display;
 
 import net.minecraft.entity.EntityLivingBase;
 
-public interface ToroHealthDisplay {
+public interface IDisplay {
 
   void setEntity(EntityLivingBase entity);
 

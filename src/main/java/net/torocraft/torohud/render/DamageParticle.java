@@ -1,4 +1,4 @@
-package net.torocraft.torohealth.render;
+package net.torocraft.torohud.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.torohealth.config.ConfigurationHandler;
+import net.torocraft.torohud.config.ConfigurationHandler;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)

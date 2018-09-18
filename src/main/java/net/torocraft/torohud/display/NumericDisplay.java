@@ -1,14 +1,14 @@
-package net.torocraft.torohealth.display;
+package net.torocraft.torohud.display;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
-import net.torocraft.torohealth.ToroHealth;
+import net.torocraft.torohud.ToroHUD;
 
-public class NumericDisplay implements ToroHealthDisplay {
+public class NumericDisplay implements IDisplay {
 
-  private static final ResourceLocation TEXTURE = new ResourceLocation(ToroHealth.MODID, "textures/gui/entityStatus.png");
+  private static final ResourceLocation TEXTURE = new ResourceLocation(ToroHUD.MODID, "textures/gui/entityStatus.png");
   private static final int WIDTH = 100;
   private static final int HEIGHT = 34;
 

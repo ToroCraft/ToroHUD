@@ -1,4 +1,4 @@
-package net.torocraft.torohealth;
+package net.torocraft.torohud.proxy;
 
 import java.util.List;
 import javax.annotation.Nullable;
@@ -8,7 +8,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
@@ -19,10 +18,11 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.torohealth.config.ConfigurationHandler;
-import net.torocraft.torohealth.gui.GuiEntityStatus;
-import net.torocraft.torohealth.network.MessageEntityStatsRequest;
-import net.torocraft.torohealth.render.DamageParticle;
+import net.torocraft.torohud.ToroHUD;
+import net.torocraft.torohud.config.ConfigurationHandler;
+import net.torocraft.torohud.gui.GuiEntityStatus;
+import net.torocraft.torohud.network.MessageEntityStatsRequest;
+import net.torocraft.torohud.render.DamageParticle;
 
 public class ClientProxy extends CommonProxy {
 
@@ -40,34 +40,6 @@ public class ClientProxy extends CommonProxy {
   public void postInit(FMLPostInitializationEvent e) {
     super.postInit(e);
     MinecraftForge.EVENT_BUS.register(entityStatusGUI);
-  }
-
-  /**
-   * This method is used when damage number are determined on the client side,
-   * entity health is tracked in NBT and damage is determined changes in health
-   */
-  @Override
-  public void displayDamageDealt(EntityLivingBase entity) {
-
-    if (!entity.world.isRemote) {
-      return;
-    }
-
-    if (!ConfigurationHandler.showDamageParticles) {
-      return;
-    }
-
-    int currentHealth = (int) Math.ceil(entity.getHealth());
-
-    if (entity.getEntityData().hasKey("health")) {
-      int entityHealth = ((NBTTagInt) entity.getEntityData().getTag("health")).getInt();
-
-      if (entityHealth != currentHealth) {
-        displayParticle(entity, entityHealth - currentHealth);
-      }
-    }
-
-    entity.getEntityData().setTag("health", new NBTTagInt(currentHealth));
   }
 
   @Override
@@ -117,7 +89,7 @@ public class ClientProxy extends CommonProxy {
       entityIdInCrosshairs = id;
     }
     if (refreshCooldown < 1) {
-      ToroHealth.NETWORK.sendToServer(new MessageEntityStatsRequest(id));
+      ToroHUD.NETWORK.sendToServer(new MessageEntityStatsRequest(id));
       refreshCooldown = 50;
     }
     refreshCooldown--;

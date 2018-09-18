@@ -1,16 +1,15 @@
-package net.torocraft.torohealth.network;
+package net.torocraft.torohud.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import net.torocraft.torohealth.ToroHealth;
+import net.torocraft.torohud.ToroHUD;
 
 public class MessageLivingHurt implements IMessage {
 
@@ -18,7 +17,7 @@ public class MessageLivingHurt implements IMessage {
   private float amount;
 
   public static void init(int packetId) {
-    ToroHealth.NETWORK.registerMessage(Handler.class, MessageLivingHurt.class, packetId, Side.CLIENT);
+    ToroHUD.NETWORK.registerMessage(Handler.class, MessageLivingHurt.class, packetId, Side.CLIENT);
   }
 
   public MessageLivingHurt() {
@@ -51,10 +50,10 @@ public class MessageLivingHurt implements IMessage {
     }
 
     public static void work(MessageLivingHurt message) {
-      EntityPlayer player = ToroHealth.PROXY.getPlayer();
+      EntityPlayer player = ToroHUD.PROXY.getPlayer();
       Entity e = player.getEntityWorld().getEntityByID(message.id);
       if (e instanceof EntityLivingBase) {
-        ToroHealth.PROXY.displayDamageDealt((EntityLivingBase)e, message.amount);
+        ToroHUD.PROXY.displayDamageDealt((EntityLivingBase)e, message.amount);
       }
     }
   }

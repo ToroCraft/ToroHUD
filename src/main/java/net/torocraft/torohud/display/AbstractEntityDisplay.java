@@ -1,4 +1,4 @@
-package net.torocraft.torohealth.display;
+package net.torocraft.torohud.display;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityGhast;
@@ -8,7 +8,7 @@ import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySquid;
 
-public abstract class AbstractHealthDisplay implements ToroHealthDisplay {
+public abstract class AbstractEntityDisplay implements IDisplay {
 
   protected EntityLivingBase entity;
 

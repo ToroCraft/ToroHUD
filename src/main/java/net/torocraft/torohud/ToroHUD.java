@@ -1,4 +1,4 @@
-package net.torocraft.torohealth;
+package net.torocraft.torohud;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,22 +12,22 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.torocraft.torohealth.config.ConfigurationHandler;
-import net.torocraft.torohealth.events.Events;
+import net.torocraft.torohud.config.ConfigurationHandler;
+import net.torocraft.torohud.proxy.CommonProxy;
 
-@Mod(modid = ToroHealth.MODID, name = ToroHealth.MODNAME, version = ToroHealth.VERSION, guiFactory = "net.torocraft.torohealth.gui.GuiFactoryToroHealth")
+@Mod(modid = ToroHUD.MODID, name = ToroHUD.MODNAME, version = ToroHUD.VERSION, guiFactory = "net.torocraft.torohud.gui.GuiFactory")
 
-public class ToroHealth {
+public class ToroHUD {
 
-  public static final String MODID = "torohealthmod";
-  public static final String VERSION = "1.12.2-12";
-  public static final String MODNAME = "ToroHealth";
+  public static final String MODID = "torohud";
+  public static final String VERSION = "1.12.2-1";
+  public static final String MODNAME = "ToroHUD";
 
-  @SidedProxy(clientSide = "net.torocraft.torohealth.ClientProxy", serverSide = "net.torocraft.torohealth.ServerProxy")
+  @SidedProxy(clientSide = "net.torocraft.torohud.proxy.ClientProxy", serverSide = "net.torocraft.torohud.proxy.ServerProxy")
   public static CommonProxy PROXY;
 
-  @Instance(value = ToroHealth.MODID)
-  public static ToroHealth INSTANCE;
+  @Instance(value = ToroHUD.MODID)
+  public static ToroHUD INSTANCE;
 
   public static SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
