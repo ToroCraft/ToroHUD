@@ -45,8 +45,7 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     mc.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
     renderHealthBar();
-    mc.fontRenderer.drawStringWithShadow(name, barX, y + 2, 16777215);
-    mc.fontRenderer.drawStringWithShadow(health, barX, y + 20, 16777215);
+    mc.fontRenderer.drawStringWithShadow(name + "  " + health + "", barX, y + 2, 16777215);
   }
 
   private void renderHealthBar() {
@@ -55,6 +54,7 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
     gui.drawTexturedModalRect(barX, barY, 0, color.ordinal() * 5 * 2, BAR_WIDTH, 5);
     int healthWidth = (int) (percent * BAR_WIDTH);
     if (healthWidth > 0) {
+      gui.drawTexturedModalRect(barX, barY, 0, Color.YELLOW.ordinal() * 5 * 2 + 5, healthWidth + 4, 5);
       gui.drawTexturedModalRect(barX, barY, 0, color.ordinal() * 5 * 2 + 5, healthWidth, 5);
     }
   }

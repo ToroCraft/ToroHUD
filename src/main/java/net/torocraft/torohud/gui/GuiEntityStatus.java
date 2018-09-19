@@ -27,8 +27,6 @@ public class GuiEntityStatus extends Gui {
   private final Minecraft mc;
   private final IDisplay entityDisplay;
   private final IDisplay potionDisplay;
-  private final IDisplay heartsDisplay;
-  private final IDisplay numericDisplay;
   private final IDisplay barDisplay;
   int screenX = PADDING_FROM_EDGE;
   int screenY = PADDING_FROM_EDGE;
@@ -46,15 +44,11 @@ public class GuiEntityStatus extends Gui {
   public GuiEntityStatus(Minecraft mc) {
     this.mc = mc;
     entityDisplay = new EntityDisplay(mc);
-    heartsDisplay = new HeartsDisplay(mc, this);
-    numericDisplay = new NumericDisplay(mc, this);
     potionDisplay = new PotionDisplay(mc, this);
     barDisplay = new BarDisplay(mc, this);
 
     entityDisplay.setPosition(50, 50);
-    heartsDisplay.setPosition(25, 150);
-    potionDisplay.setPosition(25, 160);
-    numericDisplay.setPosition(130, 150);
+    potionDisplay.setPosition(25, 200);
     barDisplay.setPosition(25, 200);
   }
 
@@ -107,9 +101,7 @@ public class GuiEntityStatus extends Gui {
       y += 6;
     }
 
-    numericDisplay.setPosition(x, y);
     barDisplay.setPosition(x, y);
-    heartsDisplay.setPosition(x, y);
     potionDisplay.setPosition(x, y);
   }
 
@@ -117,15 +109,7 @@ public class GuiEntityStatus extends Gui {
     if (ConfigurationHandler.showEntityModel) {
       entityDisplay.draw();
     }
-
-    if ("NUMERIC".equals(ConfigurationHandler.entityStatusDisplay)) {
-      numericDisplay.draw();
-    } else if ("BAR".equals(ConfigurationHandler.entityStatusDisplay)) {
-      barDisplay.draw();
-    } else if ("HEARTS".equals(ConfigurationHandler.entityStatusDisplay)) {
-      heartsDisplay.draw();
-    }
-
+    barDisplay.draw();
     potionDisplay.draw();
   }
 
@@ -185,8 +169,6 @@ public class GuiEntityStatus extends Gui {
     }
     entity = entityToTrack;
     entityDisplay.setEntity(entity);
-    heartsDisplay.setEntity(entity);
-    numericDisplay.setEntity(entity);
     barDisplay.setEntity(entity);
     potionDisplay.setEntity(entity);
   }

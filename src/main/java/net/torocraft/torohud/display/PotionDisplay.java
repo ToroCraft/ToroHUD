@@ -1,11 +1,14 @@
 package net.torocraft.torohud.display;
 
+import com.google.common.collect.Ordering;
 import java.util.Collection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
-import net.torocraft.torohud.gui.GuiEntityStatus;
 import net.torocraft.torohud.network.MessageEntityStatsResponse;
 
 public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
@@ -35,10 +38,7 @@ public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
     }
 
     resetToOrigin();
-
-    //drawName();
     drawEffects();
-    //drawArmor();
   }
 
   private void resetToOrigin() {
@@ -51,6 +51,9 @@ public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
     y += 10;
   }
 
+  private static final int Y_OFFSET = 18;
+  private static final int X_OFFSET = 3;
+
   private void drawEffects() {
     Collection<PotionEffect> potions = MessageEntityStatsResponse.POTIONS;
 
@@ -58,108 +61,36 @@ public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
       return;
     }
 
-    mc.renderEngine.bindTexture(INVENTORY_BACKGROUND);
+    int index = 0;
+    int x = this.x + X_OFFSET;
+    int y = this.y + Y_OFFSET;
 
-    for (PotionEffect potion : potions) {
+    for (PotionEffect potion : Ordering.natural().sortedCopy(potions)) {
 
-      System.out.println(x + ", " + y);
+      int textureIndex = potion.getPotion().getStatusIconIndex();
+      GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+      GlStateManager.disableLighting();
+      mc.renderEngine.bindTexture(INVENTORY_BACKGROUND);
+      gui.drawTexturedModalRect(x, y, textureIndex % 8 * 18, 198 + textureIndex / 8 * 18, 18, 18);
 
-      int index = potion.getPotion().getStatusIconIndex();
-      gui.drawTexturedModalRect(x, y, index % 8 * 18, 198 + index / 8 * 18, 18, 18);
+      String duration = Potion.getPotionDurationString(potion, 1.0F);
+      mc.fontRenderer.drawStringWithShadow(duration, x, y + 18, 0xe0e0e0);
 
-      break;
+      mc.fontRenderer.drawStringWithShadow( getAmplifierText(potion), x, y, 0xc0c0c0);
+
+      x += 24;
     }
-
-
-
-    /*
-    int currentHealth = MathHelper.ceil(entity.getHealth());
-
-    int absorptionAmount = MathHelper.ceil(entity.getAbsorptionAmount());
-    int remainingAbsorption = absorptionAmount;
-
-    float maxHealth = entity.getMaxHealth();
-
-    int numRowsOfHearts = MathHelper.ceil((maxHealth + (float) absorptionAmount) / 2.0F / 10.0F);
-    int j2 = Math.max(10 - (numRowsOfHearts - 2), 3);
-
-    for (int currentHeartBeingDrawn = MathHelper.ceil((maxHealth + (float) absorptionAmount) / 2.0F)
-        - 1; currentHeartBeingDrawn >= 0; --currentHeartBeingDrawn) {
-      int texturePosX = 16;
-      int flashingHeartOffset = 0;
-
-      int foeOffset = 0;
-
-      if (determineRelation().equals(Relation.FOE)) {
-        foeOffset = 54;
-      } else if (determineRelation().equals(Relation.UNKNOWN)) {
-        foeOffset = 18;
-      }
-
-      int rowsOfHearts = MathHelper.ceil((float) (currentHeartBeingDrawn + 1) / 10.0F) - 1;
-      int heartToDrawX = x + currentHeartBeingDrawn % 10 * 8;
-      int heartToDrawY = y + rowsOfHearts * j2;
-
-      int hardcoreModeOffset = 0;
-
-      if (entity.world.getWorldInfo().isHardcoreModeEnabled()) {
-        hardcoreModeOffset = 5;
-      }
-
-      gui.drawTexturedModalRect(heartToDrawX, heartToDrawY, 16 + flashingHeartOffset * 9, 9 * hardcoreModeOffset, 9, 9);
-
-      if (remainingAbsorption > 0) {
-        if (remainingAbsorption == absorptionAmount && absorptionAmount % 2 == 1) {
-          gui.drawTexturedModalRect(heartToDrawX, heartToDrawY, texturePosX + 153, 9 * hardcoreModeOffset, 9, 9);
-          --remainingAbsorption;
-        } else {
-          gui.drawTexturedModalRect(heartToDrawX, heartToDrawY, texturePosX + 144, 9 * hardcoreModeOffset, 9, 9);
-          remainingAbsorption -= 2;
-        }
-      } else {
-        if (currentHeartBeingDrawn * 2 + 1 < currentHealth) {
-          gui.drawTexturedModalRect(heartToDrawX, heartToDrawY, texturePosX + foeOffset + 36, 9 * hardcoreModeOffset, 9, 9);
-        }
-
-        if (currentHeartBeingDrawn * 2 + 1 == currentHealth) {
-          gui.drawTexturedModalRect(heartToDrawX, heartToDrawY, texturePosX + foeOffset + 45, 9 * hardcoreModeOffset, 9, 9);
-        }
-      }
-    }
-
-    y += (numRowsOfHearts - 1) * j2 + 10;
-
-    return remainingAbsorption;
-    */
   }
 
-  private void drawArmor() {
-    mc.renderEngine.bindTexture(GuiEntityStatus.ICONS);
-
-    int armor = entity.getTotalArmorValue();
-
-    for (int i = 0; i < 10; ++i) {
-      if (armor > 0) {
-        int armorIconX = x + i * 8;
-
-        /*
-         * determines whether armor is full, half, or empty icon
-         */
-        if (i * 2 + 1 < armor) {
-          gui.drawTexturedModalRect(armorIconX, y, 34, 9, 9, 9);
-        }
-
-        if (i * 2 + 1 == armor) {
-          gui.drawTexturedModalRect(armorIconX, y, 25, 9, 9, 9);
-        }
-
-        if (i * 2 + 1 > armor) {
-          gui.drawTexturedModalRect(armorIconX, y, 16, 9, 9, 9);
-        }
-      }
+  private String getAmplifierText(PotionEffect potioneffect) {
+    if (potioneffect.getAmplifier() == 1) {
+      return I18n.format("enchantment.level.2");
+    } else if (potioneffect.getAmplifier() == 2) {
+      return I18n.format("enchantment.level.3");
+    } else if (potioneffect.getAmplifier() == 3) {
+      return I18n.format("enchantment.level.4");
     }
-
-    y += 10;
+    return I18n.format("enchantment.level.1");
   }
 
 }
