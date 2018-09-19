@@ -48,13 +48,40 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
     mc.fontRenderer.drawStringWithShadow(name + "  " + health + "", barX, y + 2, 16777215);
   }
 
+  private static final float HEALTH_INDICATOR_DELAY = 45;
+  private float previousHealth = -1;
+  private float previousHealthDelay = HEALTH_INDICATOR_DELAY;
+
   private void renderHealthBar() {
+
+    if (previousHealth == entity.getHealth() || previousHealth == -1) {
+      previousHealthDelay = HEALTH_INDICATOR_DELAY;
+      previousHealth = entity.getHealth();
+    } else if (previousHealthDelay > 0) {
+      previousHealthDelay--;
+    } else if (previousHealthDelay < 1 && previousHealth > entity.getHealth()) {
+      previousHealth -= 0.1f;
+    } else {
+      previousHealth = entity.getHealth();
+      previousHealthDelay = HEALTH_INDICATOR_DELAY;
+    }
+
     Color color = determineColor();
     float percent = entity.getHealth() / entity.getMaxHealth();
+    float percent2 = previousHealth / entity.getMaxHealth();
+
+    renderBarBacker(color);
+    renderBar(Color.YELLOW, percent2);
+    renderBar(color, percent);
+  }
+
+  private void renderBarBacker(Color color) {
     gui.drawTexturedModalRect(barX, barY, 0, color.ordinal() * 5 * 2, BAR_WIDTH, 5);
+  }
+
+  private void renderBar(Color color, float percent) {
     int healthWidth = (int) (percent * BAR_WIDTH);
     if (healthWidth > 0) {
-      gui.drawTexturedModalRect(barX, barY, 0, Color.YELLOW.ordinal() * 5 * 2 + 5, healthWidth + 4, 5);
       gui.drawTexturedModalRect(barX, barY, 0, color.ordinal() * 5 * 2 + 5, healthWidth, 5);
     }
   }
