@@ -29,6 +29,8 @@ public class ClientProxy extends CommonProxy {
   private GuiEntityStatus entityStatusGUI;
   private Minecraft mc = Minecraft.getMinecraft();
   private Entity pointedEntity;
+  private int entityIdInCrosshairs = 0;
+  private int refreshCooldown = 0;
 
   @Override
   public void preInit(FMLPreInitializationEvent e) {
@@ -67,9 +69,6 @@ public class ClientProxy extends CommonProxy {
         motionZ);
     Minecraft.getMinecraft().effectRenderer.addEffect(damageIndicator);
   }
-
-  private int entityIdInCrosshairs = 0;
-  private int refreshCooldown = 0;
 
   @Override
   public void setEntityInCrosshairs() {

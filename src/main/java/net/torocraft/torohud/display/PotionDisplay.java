@@ -10,12 +10,11 @@ import net.torocraft.torohud.network.MessageEntityStatsResponse;
 
 public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
 
+  public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation("textures/gui/container/inventory.png");
   private final Minecraft mc;
   private final Gui gui;
   private int x, originX = 100;
   private int y, originY = 100;
-
-  public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation("textures/gui/container/inventory.png");
 
   public PotionDisplay(Minecraft mc, Gui gui) {
     this.mc = mc;
@@ -61,7 +60,7 @@ public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
 
     mc.renderEngine.bindTexture(INVENTORY_BACKGROUND);
 
-    for(PotionEffect potion : potions){
+    for (PotionEffect potion : potions) {
 
       System.out.println(x + ", " + y);
 

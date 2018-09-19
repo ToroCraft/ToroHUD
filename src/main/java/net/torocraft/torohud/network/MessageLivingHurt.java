@@ -16,10 +16,6 @@ public class MessageLivingHurt implements IMessage {
   private int id;
   private float amount;
 
-  public static void init(int packetId) {
-    ToroHUD.NETWORK.registerMessage(Handler.class, MessageLivingHurt.class, packetId, Side.CLIENT);
-  }
-
   public MessageLivingHurt() {
 
   }
@@ -27,6 +23,10 @@ public class MessageLivingHurt implements IMessage {
   public MessageLivingHurt(int id, float amount) {
     this.id = id;
     this.amount = amount;
+  }
+
+  public static void init(int packetId) {
+    ToroHUD.NETWORK.registerMessage(Handler.class, MessageLivingHurt.class, packetId, Side.CLIENT);
   }
 
   @Override
@@ -43,18 +43,18 @@ public class MessageLivingHurt implements IMessage {
 
   public static class Handler implements IMessageHandler<MessageLivingHurt, IMessage> {
 
-    @Override
-    public IMessage onMessage(final MessageLivingHurt message, MessageContext ctx) {
-      Minecraft.getMinecraft().addScheduledTask(() -> work(message));
-      return null;
-    }
-
     public static void work(MessageLivingHurt message) {
       EntityPlayer player = ToroHUD.PROXY.getPlayer();
       Entity e = player.getEntityWorld().getEntityByID(message.id);
       if (e instanceof EntityLivingBase) {
-        ToroHUD.PROXY.displayDamageDealt((EntityLivingBase)e, message.amount);
+        ToroHUD.PROXY.displayDamageDealt((EntityLivingBase) e, message.amount);
       }
+    }
+
+    @Override
+    public IMessage onMessage(final MessageLivingHurt message, MessageContext ctx) {
+      Minecraft.getMinecraft().addScheduledTask(() -> work(message));
+      return null;
     }
   }
 }

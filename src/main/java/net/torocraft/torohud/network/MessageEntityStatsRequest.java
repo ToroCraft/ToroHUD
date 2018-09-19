@@ -14,16 +14,16 @@ public class MessageEntityStatsRequest implements IMessage {
 
   public int id;
 
-  public static void init(int packetId) {
-    ToroHUD.NETWORK.registerMessage(Handler.class, MessageEntityStatsRequest.class, packetId, Side.SERVER);
-  }
-
   public MessageEntityStatsRequest() {
 
   }
 
   public MessageEntityStatsRequest(int id) {
     this.id = id;
+  }
+
+  public static void init(int packetId) {
+    ToroHUD.NETWORK.registerMessage(Handler.class, MessageEntityStatsRequest.class, packetId, Side.SERVER);
   }
 
   @Override
@@ -50,7 +50,7 @@ public class MessageEntityStatsRequest implements IMessage {
       if (!(entity instanceof EntityLivingBase)) {
         return;
       }
-      EntityLivingBase entityLiving = (EntityLivingBase)entity;
+      EntityLivingBase entityLiving = (EntityLivingBase) entity;
 
       MessageEntityStatsResponse reply = new MessageEntityStatsResponse(message.id, entityLiving.getActivePotionEffects());
       ToroHUD.NETWORK.sendTo(reply, player);

@@ -25,10 +25,6 @@ public class MessageEntityStatsResponse implements IMessage {
   private int id;
   private Collection<PotionEffect> potions;
 
-  public static void init(int packetId) {
-    ToroHUD.NETWORK.registerMessage(Handler.class, MessageEntityStatsResponse.class, packetId, Side.CLIENT);
-  }
-
   public MessageEntityStatsResponse() {
 
   }
@@ -36,6 +32,10 @@ public class MessageEntityStatsResponse implements IMessage {
   public MessageEntityStatsResponse(int id, Collection<PotionEffect> potions) {
     this.id = id;
     this.potions = potions;
+  }
+
+  public static void init(int packetId) {
+    ToroHUD.NETWORK.registerMessage(Handler.class, MessageEntityStatsResponse.class, packetId, Side.CLIENT);
   }
 
   @Override
@@ -72,18 +72,18 @@ public class MessageEntityStatsResponse implements IMessage {
 
   public static class Handler implements IMessageHandler<MessageEntityStatsResponse, IMessage> {
 
-    @Override
-    public IMessage onMessage(final MessageEntityStatsResponse message, MessageContext ctx) {
-      Minecraft.getMinecraft().addScheduledTask(() -> work(message));
-      return null;
-    }
-
     public static void work(MessageEntityStatsResponse message) {
       POTIONS = message.potions;
       for (PotionEffect p : message.potions) {
         System.out.println("POTION ON CLIENT: " + p.getEffectName() + " " + p.getDuration());
       }
 
+    }
+
+    @Override
+    public IMessage onMessage(final MessageEntityStatsResponse message, MessageContext ctx) {
+      Minecraft.getMinecraft().addScheduledTask(() -> work(message));
+      return null;
     }
   }
 }
