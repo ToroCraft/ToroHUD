@@ -13,9 +13,7 @@ import net.torocraft.torohud.ToroHUD;
 import net.torocraft.torohud.config.ConfigurationHandler;
 import net.torocraft.torohud.display.BarDisplay;
 import net.torocraft.torohud.display.EntityDisplay;
-import net.torocraft.torohud.display.HeartsDisplay;
 import net.torocraft.torohud.display.IDisplay;
-import net.torocraft.torohud.display.NumericDisplay;
 import net.torocraft.torohud.display.PotionDisplay;
 
 public class GuiEntityStatus extends Gui {

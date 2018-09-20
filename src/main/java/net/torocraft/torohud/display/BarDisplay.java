@@ -18,9 +18,15 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
   private int barX;
   private int barY;
 
+  private static final float HEALTH_INDICATOR_DELAY = 45;
+  private float previousHealth;
+  private float previousHealthDelay;
+  private int entityId;
+
   public BarDisplay(Minecraft mc, Gui gui) {
     this.mc = mc;
     this.gui = gui;
+    resetBarState();
   }
 
   @Override
@@ -33,12 +39,18 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
   @Override
   public void draw() {
     if (entity == null) {
+      //resetBarState();
       return;
     }
-    renderBossHealth();
+    if (entity.getEntityId() != entityId) {
+      resetBarState();
+      entityId = entity.getEntityId();
+      return;
+    }
+    render();
   }
 
-  public void renderBossHealth() {
+  public void render() {
     String name = getEntityName();
     String health = (int) Math.ceil(entity.getHealth()) + "/" + (int) entity.getMaxHealth();
 
@@ -48,12 +60,12 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
     mc.fontRenderer.drawStringWithShadow(name + "  " + health + "", barX, y + 2, 16777215);
   }
 
-  private static final float HEALTH_INDICATOR_DELAY = 45;
-  private float previousHealth = -1;
-  private float previousHealthDelay = HEALTH_INDICATOR_DELAY;
+  private void resetBarState() {
+    previousHealth = -1;
+    previousHealthDelay = HEALTH_INDICATOR_DELAY;
+  }
 
   private void renderHealthBar() {
-
     if (previousHealth == entity.getHealth() || previousHealth == -1) {
       previousHealthDelay = HEALTH_INDICATOR_DELAY;
       previousHealth = entity.getHealth();
@@ -74,6 +86,7 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
     renderBar(Color.YELLOW, percent2);
     renderBar(color, percent);
   }
+
 
   private void renderBarBacker(Color color) {
     gui.drawTexturedModalRect(barX, barY, 0, color.ordinal() * 5 * 2, BAR_WIDTH, 5);
