@@ -19,6 +19,7 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
   private int barY;
 
   private static final float HEALTH_INDICATOR_DELAY = 45;
+  private static final float HEALTH_ANIMATION_SPEED = 0.1f;
   private float previousHealth;
   private float previousHealthDelay;
   private int entityId;
@@ -39,7 +40,6 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
   @Override
   public void draw() {
     if (entity == null) {
-      //resetBarState();
       return;
     }
     if (entity.getEntityId() != entityId) {
@@ -72,7 +72,7 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
     } else if (previousHealthDelay > 0) {
       previousHealthDelay--;
     } else if (previousHealthDelay < 1 && previousHealth > entity.getHealth()) {
-      previousHealth -= 0.1f;
+      previousHealth -= HEALTH_ANIMATION_SPEED;
     } else {
       previousHealth = entity.getHealth();
       previousHealthDelay = HEALTH_INDICATOR_DELAY;
