@@ -74,10 +74,6 @@ public class MessageEntityStatsResponse implements IMessage {
 
     public static void work(MessageEntityStatsResponse message) {
       POTIONS = message.potions;
-      for (PotionEffect p : message.potions) {
-        System.out.println("POTION ON CLIENT: " + p.getEffectName() + " " + p.getDuration());
-      }
-
     }
 
     @Override

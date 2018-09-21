@@ -9,6 +9,7 @@ import net.torocraft.torohud.ToroHUD;
 public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
 
   private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation(ToroHUD.MODID, "textures/gui/bars.png");
+  private static final ResourceLocation ICON_TEXTURES = new ResourceLocation("textures/gui/icons.png");
 
   private static final int BAR_WIDTH = 92;
 
@@ -57,7 +58,30 @@ public class BarDisplay extends AbstractEntityDisplay implements IDisplay {
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     mc.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
     renderHealthBar();
-    mc.fontRenderer.drawStringWithShadow(name + "  " + health + "", barX, y + 2, 16777215);
+
+    mc.fontRenderer.drawStringWithShadow(name, barX, y + 2, 16777215);
+    barX += mc.fontRenderer.getStringWidth(name) + 5;
+
+    renderHeartIcon(barX, y + 1);
+    barX += 10;
+
+    mc.fontRenderer.drawStringWithShadow(health, barX, y + 2, 0xe0e0e0);
+    barX += mc.fontRenderer.getStringWidth(health) + 5;
+
+    renderArmorIcon(barX, y + 1);
+    barX += 10;
+
+    mc.fontRenderer.drawStringWithShadow(entity.getTotalArmorValue() + "", barX, y + 2, 0xe0e0e0);
+  }
+
+  private void renderArmorIcon(int x, int y) {
+    mc.getTextureManager().bindTexture(ICON_TEXTURES);
+    gui.drawTexturedModalRect(x, y, 34, 9, 9, 9);
+  }
+
+  private void renderHeartIcon(int x, int y) {
+    mc.getTextureManager().bindTexture(ICON_TEXTURES);
+    gui.drawTexturedModalRect(x, y, 16 + 36, 0, 9, 9);
   }
 
   private void resetBarState() {
