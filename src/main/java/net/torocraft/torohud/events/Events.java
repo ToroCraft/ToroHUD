@@ -41,7 +41,7 @@ public class Events {
     if (event.getType() != ElementType.CHAT) {
       return;
     }
-    ToroHUD.PROXY.setEntityInCrosshairs();
+    ToroHUD.PROXY.updateEntityInCrosshairs();
   }
 
 }

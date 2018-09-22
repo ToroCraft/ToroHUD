@@ -30,7 +30,7 @@ public class CommonProxy {
 
   }
 
-  public void setEntityInCrosshairs() {
+  public void updateEntityInCrosshairs() {
 
   }
 

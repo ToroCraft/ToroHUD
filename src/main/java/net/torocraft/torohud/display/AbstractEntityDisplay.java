@@ -1,5 +1,6 @@
 package net.torocraft.torohud.display;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMob;
@@ -12,7 +13,7 @@ public abstract class AbstractEntityDisplay implements IDisplay {
 
   protected EntityLivingBase entity;
 
-  protected Relation determineRelation() {
+  public static Relation determineRelation(Entity entity) {
     if (entity instanceof EntityMob) {
       return Relation.FOE;
     } else if (entity instanceof EntitySlime) {
@@ -28,6 +29,10 @@ public abstract class AbstractEntityDisplay implements IDisplay {
     } else {
       return Relation.UNKNOWN;
     }
+  }
+
+  protected Relation determineRelation() {
+   return determineRelation(entity);
   }
 
   @Override
