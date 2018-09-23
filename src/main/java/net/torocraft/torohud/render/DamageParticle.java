@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.torohud.ToroHUD;
 import org.lwjgl.opengl.GL11;
 
-@Config(modid = ToroHUD.MODID, name = "Damage Particles")
+
 @SideOnly(Side.CLIENT)
 public class DamageParticle extends Particle {
 
@@ -30,19 +30,21 @@ public class DamageParticle extends Particle {
   protected float scale = 1.0F;
   private int damage;
 
+  @Config(modid = ToroHUD.MODID, name = "Damage Particles")
+  public static class Conf {
 
-  @Name("Show Damage Particles")
-  public static boolean showDamageParticles = true; //config.getBoolean("Show Damage Particles", Configuration.CATEGORY_CLIENT, true, "Show Damage Indicators");
+    @Name("Show Damage Particles")
+    public static boolean showDamageParticles = true;
 
-  @Name("Heal Color")
-  public static Color healColor = Color.GREEN; // mapColor(config.getString("Heal Color", Configuration.CATEGORY_CLIENT, "GREEN", "Heal Text Color", acceptedColors));
+    @Name("Heal Color")
+    public static Color healColor = Color.GREEN;
 
-  @Name("Damage Color")
-  public static Color damageColor = Color.RED; // mapColor(config.getString("Damage Color", Configuration.CATEGORY_CLIENT, "RED", "Damage Text Color", acceptedColors));
-
+    @Name("Damage Color")
+    public static Color damageColor = Color.RED;
+  }
 
   public static void displayParticle(Entity entity, int damage) {
-    if (!showDamageParticles) {
+    if (!Conf.showDamageParticles) {
       return;
     }
     if (damage == 0) {
@@ -110,9 +112,9 @@ public class DamageParticle extends Particle {
     GL11.glEnable(3008);
     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-    Color color = damageColor;
+    Color color = Conf.damageColor;
     if (damage < 0) {
-      color = healColor;
+      color = Conf.healColor;
     }
 
     final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;

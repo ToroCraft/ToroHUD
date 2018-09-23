@@ -18,8 +18,8 @@ import net.torocraft.torohud.network.MessageLivingHurt;
 public class Events {
 
   @SubscribeEvent
-  public static void onConfigChanged(OnConfigChangedEvent event){
-    if(event.getModID().equals(ToroHUD.MODID)){
+  public static void onConfigChanged(OnConfigChangedEvent event) {
+    if (event.getModID().equals(ToroHUD.MODID)) {
       ConfigManager.sync(ToroHUD.MODID, Type.INSTANCE);
     }
   }
