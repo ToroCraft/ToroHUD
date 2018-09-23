@@ -27,6 +27,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -37,8 +38,8 @@ import net.torocraft.torohud.display.AbstractEntityDisplay;
 import net.torocraft.torohud.gui.HealthBars.Conf.Mode;
 import net.torocraft.torohud.gui.HealthBars.Conf.NumberType;
 import net.torocraft.torohud.util.EntityUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
-import scala.collection.parallel.ParIterableLike.Min;
 
 
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -82,6 +83,10 @@ public class HealthBars {
 
     @Name("Damage Number Type")
     public static NumberType numberType = NumberType.LAST;
+
+    @Name("Additional Weapons")
+    @Comment("When using WHEN_HOLDING_WEAPON to show entity bars, more items can be added here to be treated as weapons.")
+    public static String[] additionalWeaponItems = {};
 
   }
 
@@ -151,9 +156,16 @@ public class HealthBars {
   }
 
   private static boolean isWeapon(ItemStack item) {
-    return item.getItem() instanceof ItemSword || item.getItem() instanceof ItemBow || item.getItem() instanceof ItemPotion;
+    return item.getItem() instanceof ItemSword ||
+        item.getItem() instanceof ItemBow ||
+        item.getItem() instanceof ItemPotion ||
+        isInWeaponWhiteList(item);
   }
 
+  private static boolean isInWeaponWhiteList(ItemStack item) {
+    String itemName = item.getItem().getUnlocalizedName();
+    return ArrayUtils.contains(Conf.additionalWeaponItems, itemName);
+  }
 
   private static boolean stateExpired(World world, int id, State state) {
     if (state == null) {
