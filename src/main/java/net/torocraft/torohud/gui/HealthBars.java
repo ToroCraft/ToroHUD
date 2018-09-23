@@ -38,6 +38,7 @@ import net.torocraft.torohud.gui.HealthBars.Conf.Mode;
 import net.torocraft.torohud.gui.HealthBars.Conf.NumberType;
 import net.torocraft.torohud.util.EntityUtil;
 import org.lwjgl.opengl.GL11;
+import scala.collection.parallel.ParIterableLike.Min;
 
 
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -183,7 +184,7 @@ public class HealthBars {
   }
 
   public static void drawEntityHealthBarInWorld(EntityLivingBase entity, float partialTicks) {
-    if (!EntityUtil.whiteListedEntity(entity)) {
+    if (!EntityUtil.whiteListedEntity(entity) || entity == Minecraft.getMinecraft().player) {
       return;
     }
     double x = entity.lastTickPosX + ((entity.posX - entity.lastTickPosX) * partialTicks);
