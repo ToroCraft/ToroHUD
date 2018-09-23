@@ -33,8 +33,8 @@ public class HealthBars {
 
   private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation(ToroHUD.MODID, "textures/gui/bars.png");
 
-  private static final float HEALTH_INDICATOR_DELAY = 45;
-  private static final float HEALTH_ANIMATION_SPEED = 0.1f;
+  private static final float HEALTH_INDICATOR_DELAY = 60;
+  private static final float HEALTH_ANIMATION_SPEED = 0.08f;
 
   private static final int GREEN = 0x00FF00FF;
   private static final int YELLOW = 0xFFFF00FF;
@@ -45,6 +45,12 @@ public class HealthBars {
 
   private static final int DISPLAY_BAR_RADIUS = 60;
   private static final int DISPLAY_BAR_DIAMETER = DISPLAY_BAR_RADIUS * 2;
+
+
+  private static final float VERTICAL_MARGIN = 0.35f;
+  private static final double FULL_SIZE = 40;
+  private static final double HALF_SIZE = FULL_SIZE / 2;
+  private static final float SCALE = 0.03f;
 
   @SubscribeEvent
   public static void onRenderWorldLast(RenderWorldLastEvent event) {
@@ -59,8 +65,8 @@ public class HealthBars {
   }
 
   private static class State {
-
     private float previousHealth;
+    private float previousHealthDisplay;
     private float previousHealthDelay;
   }
 
@@ -117,43 +123,55 @@ public class HealthBars {
   private static void drawEntityHealthBar(EntityLivingBase entity, double x, double y, double z, Gui gui) {
     State state = getState(entity);
 
-    if (state.previousHealth == entity.getHealth() || state.previousHealth == -1) {
+    if (state.previousHealthDisplay == entity.getHealth() || state.previousHealthDisplay == -1) {
       state.previousHealthDelay = HEALTH_INDICATOR_DELAY;
-      state.previousHealth = entity.getHealth();
+      state.previousHealthDisplay = entity.getHealth();
     } else if (state.previousHealthDelay > 0) {
       state.previousHealthDelay--;
-    } else if (state.previousHealthDelay < 1 && state.previousHealth > entity.getHealth()) {
-      state.previousHealth -= HEALTH_ANIMATION_SPEED;
+    } else if (state.previousHealthDelay < 1 && state.previousHealthDisplay > entity.getHealth()) {
+      state.previousHealthDisplay -= HEALTH_ANIMATION_SPEED;
     } else {
+      state.previousHealthDisplay = entity.getHealth();
       state.previousHealth = entity.getHealth();
       state.previousHealthDelay = HEALTH_INDICATOR_DELAY;
     }
 
     int color = determineColor(entity);
     float percent = entity.getHealth() / entity.getMaxHealth();
-    float percent2 = state.previousHealth / entity.getMaxHealth();
+    float percent2 = state.previousHealthDisplay / entity.getMaxHealth();
     int zOffset = 0;
+    y += entity.height;
 
-    drawBarInWorld(entity, gui, x, y, z, 1, DARK_GRAY, zOffset++);
-    drawBarInWorld(entity, gui, x, y, z, percent2, WHITE, zOffset++);
-    drawBarInWorld(entity, gui, x, y, z, percent, color, zOffset);
+    drawBar(gui, x, y, z, 1, DARK_GRAY, zOffset++);
+    drawBar(gui, x, y, z, percent2, WHITE, zOffset++);
+    drawBar(gui, x, y, z, percent, color, zOffset++);
+    drawDamageNumber(state, entity, gui, x, y, z, zOffset);
   }
 
-  private static final float verticalMargin = 0.35f;
-  private static final double fullSize = 40;
-  private static final double halfSize = fullSize / 2;
-  private static final float scale = 0.03f;
+  private static void drawDamageNumber(State state, EntityLivingBase entity, Gui gui, double x, double y, double z, int zOffset) {
 
+    int dmg = Math.round(state.previousHealth - entity.getHealth());
 
-  private static void drawBarInWorld(EntityLivingBase entity, Gui gui, double x, double y, double z, float percent, int color, int zOffset) {
+    if (dmg < 1) {
+      return;
+    }
 
+    String s = Integer.toString(dmg);
+    int sw = Minecraft.getMinecraft().fontRenderer.getStringWidth(s);
+
+    if (gui != null) {
+      Minecraft.getMinecraft().fontRenderer.drawString(s, ((int)x + 92) - sw, (int)y + 6, 0xC0C0C0);
+    }
+  }
+
+  private static void drawBar(Gui gui, double x, double y, double z, float percent, int color, int zOffset) {
     float c = 0.00390625f;
     int u = 0;
     int v = 6 * 5 * 2 + 5;
     int uw = MathHelper.ceil(92 * percent);
     int vh = 5;
 
-    double size = percent * fullSize;
+    double size = percent * FULL_SIZE;
     double h = 3;
 
     float r = (color >> 24 & 255) / 255.0F;
@@ -170,9 +188,25 @@ public class HealthBars {
     }
 
     RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+    boolean lighting = setupGlStateForInWorldRender(x, y, z, zOffset, renderManager);
 
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+    buffer.pos(-HALF_SIZE, 0, 0.0D).tex(u * c, v * c).endVertex();
+    buffer.pos(-HALF_SIZE, h, 0.0D).tex(u * c, (v + vh) * c).endVertex();
+    buffer.pos(-HALF_SIZE + size, h, 0.0D).tex((u + uw) * c, (v + vh) * c).endVertex();
+    buffer.pos(-HALF_SIZE + size, 0, 0.0D).tex(((u + uw) * c), v * c).endVertex();
+    tessellator.draw();
+
+    restoreGlState(lighting);
+  }
+
+
+
+  private static boolean setupGlStateForInWorldRender(double x, double y, double z, int zOffset, RenderManager renderManager) {
     double relX = x - renderManager.viewerPosX;
-    double relY = y - renderManager.viewerPosY + entity.height + verticalMargin;
+    double relY = y - renderManager.viewerPosY + VERTICAL_MARGIN;
     double relZ = z - renderManager.viewerPosZ;
 
     GlStateManager.pushMatrix();
@@ -183,23 +217,15 @@ public class HealthBars {
     GlStateManager.rotate(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
     GlStateManager.translate(0, 0, -zOffset * 0.001);
 
-    GlStateManager.scale(-scale, -scale, scale);
+    GlStateManager.scale(-SCALE, -SCALE, SCALE);
     boolean lighting = GL11.glGetBoolean(GL11.GL_LIGHTING);
     GlStateManager.disableLighting();
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    Tessellator tessellator = Tessellator.getInstance();
-    BufferBuilder buffer = tessellator.getBuffer();
+    return lighting;
+  }
 
-    buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-
-    buffer.pos(-halfSize, 0, 0.0D).tex(u * c, v * c).endVertex();
-    buffer.pos(-halfSize, h, 0.0D).tex(u * c, (v + vh) * c).endVertex();
-    buffer.pos(-halfSize + size, h, 0.0D).tex((u + uw) * c, (v + vh) * c).endVertex();
-    buffer.pos(-halfSize + size, 0, 0.0D).tex(((u + uw) * c), v * c).endVertex();
-
-    tessellator.draw();
-
+  private static void restoreGlState(boolean lighting) {
     GlStateManager.disableBlend();
     GlStateManager.enableDepth();
     GlStateManager.depthMask(true);
