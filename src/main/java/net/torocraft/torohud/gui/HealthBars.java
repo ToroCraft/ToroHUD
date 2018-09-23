@@ -36,6 +36,7 @@ import net.torocraft.torohud.ToroHUD;
 import net.torocraft.torohud.display.AbstractEntityDisplay;
 import net.torocraft.torohud.gui.HealthBars.Conf.Mode;
 import net.torocraft.torohud.gui.HealthBars.Conf.NumberType;
+import net.torocraft.torohud.util.EntityUtil;
 import org.lwjgl.opengl.GL11;
 
 
@@ -80,6 +81,7 @@ public class HealthBars {
 
     @Name("Damage Number Type")
     public static NumberType numberType = NumberType.LAST;
+
   }
 
   @SubscribeEvent
@@ -181,6 +183,9 @@ public class HealthBars {
   }
 
   public static void drawEntityHealthBarInWorld(EntityLivingBase entity, float partialTicks) {
+    if (!EntityUtil.whiteListedEntity(entity)) {
+      return;
+    }
     double x = entity.lastTickPosX + ((entity.posX - entity.lastTickPosX) * partialTicks);
     double y = entity.lastTickPosY + ((entity.posY - entity.lastTickPosY) * partialTicks);
     double z = entity.lastTickPosZ + ((entity.posZ - entity.lastTickPosZ) * partialTicks);

@@ -11,6 +11,7 @@ import net.torocraft.torohud.ToroHUD;
 import net.torocraft.torohud.gui.GuiEntityStatus;
 import net.torocraft.torohud.network.MessageEntityStatsRequest;
 import net.torocraft.torohud.render.DamageParticle;
+import net.torocraft.torohud.util.EntityUtil;
 import net.torocraft.torohud.util.RayTrace;
 
 public class ClientProxy extends CommonProxy {
@@ -43,7 +44,7 @@ public class ClientProxy extends CommonProxy {
   @Override
   public void updateEntityInCrosshairs() {
     EntityLivingBase entity = RayTrace.getEntityInCrosshairs();
-    if (entity != null) {
+    if (entity != null && EntityUtil.whiteListedEntity(entity)) {
       requestEntityUpdate(entity);
       entityStatusGUI.setEntity(entity);
     }
@@ -66,6 +67,5 @@ public class ClientProxy extends CommonProxy {
   public EntityPlayer getPlayer() {
     return Minecraft.getMinecraft().player;
   }
-
 
 }

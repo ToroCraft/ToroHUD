@@ -1,5 +1,7 @@
 package net.torocraft.torohud.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -24,6 +26,8 @@ public class GuiEntityStatus extends Gui {
 
   @Config(modid = ToroHUD.MODID, name = "GUI Settings")
   public static class Conf {
+    public enum GuiAnchor {TOP_LEFT, TOP_CENTER, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
+    public enum Skin {NONE, BASIC}
 
     @Name("Disable GUI")
     public static boolean disableGui = false;
@@ -37,17 +41,16 @@ public class GuiEntityStatus extends Gui {
     @Name("GUI Position")
     public static GuiAnchor guiPosition = GuiAnchor.TOP_LEFT;
 
-    public enum GuiAnchor {TOP_LEFT, TOP_CENTER, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
-
     @Name("Hide Delay")
     @Comment("Delays hiding the dialog for the given number of milliseconds")
     @RangeInt(min = 50, max = 5000)
-    public static int hideDelay = 300; //config.getInt("Hide Delay", Configuration.CATEGORY_CLIENT, 400, 50, 5000, );
-
-    public enum Skin {NONE, BASIC}
+    public static int hideDelay = 300;
 
     @Name("Background Skin Selection")
-    public static Skin skin = Skin.BASIC; // config.getString("Skin", Configuration.CATEGORY_CLIENT, "BASIC", "Background Skin Selection", new String[]{"NONE", "BASIC", "HEAVY"});
+    public static Skin skin = Skin.BASIC;
+
+    @Name("Entity Black List")
+    public static String[] entityBlacklist = {};
 
   }
 
