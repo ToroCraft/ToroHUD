@@ -35,6 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.torohud.ToroHUD;
 import net.torocraft.torohud.display.AbstractEntityDisplay;
 import net.torocraft.torohud.gui.HealthBars.Conf.Mode;
+import net.torocraft.torohud.gui.HealthBars.Conf.NumberType;
 import org.lwjgl.opengl.GL11;
 
 
@@ -72,8 +73,13 @@ public class HealthBars {
 
     public enum Mode {NONE, WHEN_HOLDING_WEAPON, ALWAYS}
 
+    public enum NumberType {NONE, LAST, CUMULATIVE}
+
     @Name("Show Bars Above Entities")
     public static Mode showBarsAboveEntities = Mode.WHEN_HOLDING_WEAPON;
+
+    @Name("Damage Number Type")
+    public static NumberType numberType = NumberType.LAST;
   }
 
   @SubscribeEvent
@@ -104,6 +110,10 @@ public class HealthBars {
     private float previousHealth;
     private float previousHealthDisplay;
     private float previousHealthDelay;
+
+    private float lastDmg;
+    private float lastHealth;
+    private float lastDmgDelay;
   }
 
 
@@ -184,10 +194,20 @@ public class HealthBars {
   private static void drawEntityHealthBar(EntityLivingBase entity, double x, double y, double z, Gui gui) {
     State state = getState(entity);
 
-    if (state.previousHealthDisplay == entity.getHealth() || state.previousHealthDisplay == -1) {
-      state.previousHealthDelay = HEALTH_INDICATOR_DELAY;
-      state.previousHealthDisplay = entity.getHealth();
-    } else if (state.previousHealthDelay > 0) {
+    if (state.lastHealth < 1) {
+      state.lastHealth = entity.getHealth();
+    } else if (state.lastHealth != entity.getHealth()) {
+      state.lastDmg = state.lastHealth - entity.getHealth();
+      state.lastDmgDelay = HEALTH_INDICATOR_DELAY;
+      state.lastHealth = entity.getHealth();
+    } else if (state.lastDmgDelay > 0) {
+      state.lastDmgDelay--;
+    } else {
+      state.lastHealth = entity.getHealth();
+      state.lastDmg = 0;
+    }
+
+    if (state.previousHealthDelay > 0) {
       state.previousHealthDelay--;
     } else if (state.previousHealthDelay < 1 && state.previousHealthDisplay > entity.getHealth()) {
       state.previousHealthDisplay -= HEALTH_ANIMATION_SPEED;
@@ -208,18 +228,22 @@ public class HealthBars {
     drawBar(gui, x, y, z, 1, DARK_GRAY, zOffset++);
     drawBar(gui, x, y, z, percent2, color2, zOffset++);
     drawBar(gui, x, y, z, percent, color, zOffset++);
-    drawDamageNumber(state, entity, gui, x, y, z, zOffset);
+    if (Conf.numberType.equals(NumberType.CUMULATIVE)) {
+      drawDamageNumber(state.previousHealth - entity.getHealth(), entity, gui, x, y, z, zOffset);
+    } else if (Conf.numberType.equals(NumberType.LAST)) {
+      drawDamageNumber(state.lastDmg, entity, gui, x, y, z, zOffset);
+    }
   }
 
-  private static void drawDamageNumber(State state, EntityLivingBase entity, Gui gui, double x, double y, double z, int zOffset) {
+  private static void drawDamageNumber(float dmg, EntityLivingBase entity, Gui gui, double x, double y, double z, int zOffset) {
 
-    int dmg = Math.round(state.previousHealth - entity.getHealth());
+    int i = Math.round(dmg);
 
-    if (dmg < 1) {
+    if (i < 1) {
       return;
     }
 
-    String s = Integer.toString(dmg);
+    String s = Integer.toString(i);
     int sw = Minecraft.getMinecraft().fontRenderer.getStringWidth(s);
 
     if (gui != null) {
