@@ -1,7 +1,6 @@
 package net.torocraft.torohud;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -12,10 +11,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.torocraft.torohud.config.ConfigurationHandler;
 import net.torocraft.torohud.proxy.CommonProxy;
 
-@Mod(modid = ToroHUD.MODID, name = ToroHUD.MODNAME, version = ToroHUD.VERSION, guiFactory = "net.torocraft.torohud.gui.GuiFactory")
+@Mod(modid = ToroHUD.MODID, name = ToroHUD.MODNAME, version = ToroHUD.VERSION)
 
 public class ToroHUD {
 
@@ -37,8 +35,8 @@ public class ToroHUD {
   public void preInit(FMLPreInitializationEvent e) {
     PROXY.preInit(e);
 
-    ConfigurationHandler.init(e.getSuggestedConfigurationFile());
-    MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
+    //ConfigurationHandler.init(e.getSuggestedConfigurationFile());
+    //MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
   }
 
   @EventHandler

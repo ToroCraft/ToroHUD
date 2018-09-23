@@ -32,7 +32,7 @@ public abstract class AbstractEntityDisplay implements IDisplay {
   }
 
   protected Relation determineRelation() {
-   return determineRelation(entity);
+    return determineRelation(entity);
   }
 
   @Override

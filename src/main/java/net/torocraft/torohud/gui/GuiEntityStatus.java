@@ -8,15 +8,51 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.Comment;
+import net.minecraftforge.common.config.Config.Name;
+import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.torohud.ToroHUD;
-import net.torocraft.torohud.config.ConfigurationHandler;
 import net.torocraft.torohud.display.BarDisplay;
 import net.torocraft.torohud.display.EntityDisplay;
 import net.torocraft.torohud.display.IDisplay;
 import net.torocraft.torohud.display.PotionDisplay;
 
+@Config(modid = ToroHUD.MODID, name = "GUI Settings")
 public class GuiEntityStatus extends Gui {
+
+  //
+//
+//
+  @Name("Disable GUI")
+  public static boolean disableGui = false;// config.getString("Health Bar Display", Configuration.CATEGORY_CLIENT, "HEARTS", "Display Health Bars", new String[]{"BAR", "OFF"});
+
+//  statusDisplayPosition = config
+//      .getString("Health Bar Position", Configuration.CATEGORY_CLIENT, "TOP LEFT", "Location of Health Bar", new String[]{"TOP LEFT", "TOP CENTER", "TOP RIGHT", "BOTTOM LEFT", "BOTTOM RIGHT"});
+
+
+  @Name("X Offset")
+  public static int xOffset = 0; //config.getInt("Health Bar X", Configuration.CATEGORY_CLIENT, 0, -20000, 20000, "With CUSTOM position, sets X position of Health Bar");
+
+  @Name("Y Offset")
+  public static int yOffset = 0; // config.getInt("Health Bar Y", Configuration.CATEGORY_CLIENT, 0, -20000, 20000, "With CUSTOM position, sets Y position of Health Bar");
+
+
+  @Name("GUI Position")
+  public static GuiAnchor guiPosition = GuiAnchor.TOP_LEFT;
+
+  public enum GuiAnchor {TOP_LEFT, TOP_CENTER, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
+
+  @Name("Hide Delay")
+  @Comment("Delays hiding the dialog for the given number of milliseconds")
+  @RangeInt(min = 50, max = 5000)
+  public static int hideDelay = 300; //config.getInt("Hide Delay", Configuration.CATEGORY_CLIENT, 400, 50, 5000, );
+
+  public enum Skin {NONE, BASIC}
+
+  @Name("Background Skin Selection")
+  public static Skin skin = Skin.BASIC; // config.getString("Skin", Configuration.CATEGORY_CLIENT, "BASIC", "Background Skin Selection", new String[]{"NONE", "BASIC", "HEAVY"});
 
   private static final int PADDING_FROM_EDGE = 3;
   private static final ResourceLocation SKIN_BASIC = new ResourceLocation(ToroHUD.MODID, "textures/gui/default_skin_basic.png");
@@ -52,7 +88,7 @@ public class GuiEntityStatus extends Gui {
 
   @SubscribeEvent
   public void drawHealthBar(RenderGameOverlayEvent.Pre event) {
-    if (!showHealthBar || event.getType() != ElementType.CHAT) {
+    if (disableGui || !showHealthBar || event.getType() != ElementType.CHAT) {
       return;
     }
     updateGuiAge();
@@ -62,24 +98,17 @@ public class GuiEntityStatus extends Gui {
   }
 
   private void drawSkin() {
-    if (ConfigurationHandler.skin.equals("NONE")) {
+    if (skin.equals(Skin.NONE) || !EntityDisplay.showEntityModel) {
       return;
     }
-
-    if (ConfigurationHandler.skin.equals("HEAVY")) {
-      mc.getTextureManager().bindTexture(SKIN_HEAVY);
-    } else {
-      mc.getTextureManager().bindTexture(SKIN_BASIC);
-    }
-
+    mc.getTextureManager().bindTexture(SKIN_BASIC);
     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     Gui.drawModalRectWithCustomSizedTexture(screenX - 10, screenY - 10, 0.0f, 0.0f, 160, 60, 160, 60);
   }
 
   private void updateGuiAge() {
-    String entityStatusDisplay = ConfigurationHandler.entityStatusDisplay;
     age = age + 15;
-    if (age > ConfigurationHandler.hideDelay || entityStatusDisplay.equals("OFF")) {
+    if (age > hideDelay) {
       hideHealthBar();
     }
   }
@@ -90,12 +119,12 @@ public class GuiEntityStatus extends Gui {
     x = screenX;
     y = screenY;
 
-    if (ConfigurationHandler.showEntityModel) {
+    if (EntityDisplay.showEntityModel) {
       entityDisplay.setPosition(x, y);
       x += 40;
     }
 
-    if (ConfigurationHandler.statusDisplayPosition.contains("BOTTOM")) {
+    if (guiPosition.equals(GuiAnchor.BOTTOM_LEFT) || guiPosition.equals(GuiAnchor.BOTTOM_RIGHT)) {
       y += 6;
     }
 
@@ -104,7 +133,7 @@ public class GuiEntityStatus extends Gui {
   }
 
   private void draw() {
-    if (ConfigurationHandler.showEntityModel) {
+    if (EntityDisplay.showEntityModel) {
       entityDisplay.draw();
     }
     barDisplay.draw();
@@ -113,7 +142,7 @@ public class GuiEntityStatus extends Gui {
 
   private void adjustForDisplayPositionSetting() {
 
-    if (ConfigurationHandler.showEntityModel) {
+    if (EntityDisplay.showEntityModel) {
       displayHeight = 40;
       displayWidth = 140;
     } else {
@@ -122,12 +151,12 @@ public class GuiEntityStatus extends Gui {
     }
 
     ScaledResolution viewport = new ScaledResolution(mc);
-    String displayPosition = ConfigurationHandler.statusDisplayPosition;
+    String displayPosition = guiPosition.toString();
 
     int sh = viewport.getScaledHeight();
     int sw = viewport.getScaledWidth();
 
-    if (displayPosition.contains("TOP") || displayPosition.equals("CUSTOM")) {
+    if (displayPosition.contains("TOP")) {
       screenY = PADDING_FROM_EDGE;
     }
 
@@ -135,7 +164,7 @@ public class GuiEntityStatus extends Gui {
       screenY = sh - displayHeight - PADDING_FROM_EDGE;
     }
 
-    if (displayPosition.contains("LEFT") || displayPosition.equals("CUSTOM")) {
+    if (displayPosition.contains("LEFT")) {
       screenX = PADDING_FROM_EDGE;
     }
 
@@ -147,8 +176,8 @@ public class GuiEntityStatus extends Gui {
       screenX = (sw - displayWidth) / 2;
     }
 
-    screenX += ConfigurationHandler.statusDisplayX;
-    screenY += ConfigurationHandler.statusDisplayY;
+    screenX += xOffset;
+    screenY += yOffset;
   }
 
   private void showHealthBar() {

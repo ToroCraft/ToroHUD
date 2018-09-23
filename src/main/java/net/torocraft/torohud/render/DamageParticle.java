@@ -8,11 +8,14 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.torohud.config.ConfigurationHandler;
+import net.torocraft.torohud.ToroHUD;
 import org.lwjgl.opengl.GL11;
 
+@Config(modid = ToroHUD.MODID, name = "Damage Particles")
 @SideOnly(Side.CLIENT)
 public class DamageParticle extends Particle {
 
@@ -26,6 +29,34 @@ public class DamageParticle extends Particle {
   protected boolean grow = true;
   protected float scale = 1.0F;
   private int damage;
+
+
+  @Name("Show Damage Particles")
+  public static boolean showDamageParticles = true; //config.getBoolean("Show Damage Particles", Configuration.CATEGORY_CLIENT, true, "Show Damage Indicators");
+
+  @Name("Heal Color")
+  public static Color healColor = Color.GREEN; // mapColor(config.getString("Heal Color", Configuration.CATEGORY_CLIENT, "GREEN", "Heal Text Color", acceptedColors));
+
+  @Name("Damage Color")
+  public static Color damageColor = Color.RED; // mapColor(config.getString("Damage Color", Configuration.CATEGORY_CLIENT, "RED", "Damage Text Color", acceptedColors));
+
+
+  public static void displayParticle(Entity entity, int damage) {
+    if (!showDamageParticles) {
+      return;
+    }
+    if (damage == 0) {
+      return;
+    }
+    World world = entity.world;
+    double motionX = world.rand.nextGaussian() * 0.02;
+    double motionY = 0.5f;
+    double motionZ = world.rand.nextGaussian() * 0.02;
+    Particle damageIndicator = new DamageParticle(damage, world, entity.posX, entity.posY + entity.height, entity.posZ, motionX, motionY,
+        motionZ);
+    Minecraft.getMinecraft().effectRenderer.addEffect(damageIndicator);
+  }
+
 
   public DamageParticle(int damage, World world, double parX, double parY, double parZ, double parMotionX, double parMotionY, double parMotionZ) {
     super(world, parX, parY, parZ, parMotionX, parMotionY, parMotionZ);
@@ -79,14 +110,14 @@ public class DamageParticle extends Particle {
     GL11.glEnable(3008);
     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-    int color = ConfigurationHandler.damageColor;
+    Color color = damageColor;
     if (damage < 0) {
-      color = ConfigurationHandler.healColor;
+      color = healColor;
     }
 
     final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
     fontRenderer.drawStringWithShadow(this.text,
-        -MathHelper.floor(fontRenderer.getStringWidth(this.text) / 2.0F) + 1, -MathHelper.floor(fontRenderer.FONT_HEIGHT / 2.0F) + 1, color);
+        -MathHelper.floor(fontRenderer.getStringWidth(this.text) / 2.0F) + 1, -MathHelper.floor(fontRenderer.FONT_HEIGHT / 2.0F) + 1, mapColor(color));
 
     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     GL11.glDepthFunc(515);
@@ -104,6 +135,29 @@ public class DamageParticle extends Particle {
 
   public int getFXLayer() {
     return 3;
+  }
+
+  public enum Color {RED, GREEN, BLUE, YELLOW, ORANGE, BLACK, PURPLE}
+
+  private static int mapColor(Color color) {
+    switch (color) {
+      case RED:
+        return 0xff0000;
+      case GREEN:
+        return 0x00ff00;
+      case BLUE:
+        return 0x0000ff;
+      case YELLOW:
+        return 0xffff00;
+      case ORANGE:
+        return 0xffa500;
+      case BLACK:
+        return 0x000000;
+      case PURPLE:
+        return 0x960096;
+      default:
+        return 0xffffff;
+    }
   }
 
 }

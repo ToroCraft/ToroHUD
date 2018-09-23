@@ -4,7 +4,6 @@ import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
-import net.torocraft.torohud.config.GuiConfigToroHealth;
 
 public class GuiFactory implements IModGuiFactory {
 
@@ -20,7 +19,7 @@ public class GuiFactory implements IModGuiFactory {
 
   @Override
   public GuiScreen createConfigGui(GuiScreen parentScreen) {
-    return new GuiConfigToroHealth(parentScreen);
+    return null;// new GuiConfigToroHUD(parentScreen);
   }
 
   @Override

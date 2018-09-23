@@ -3,8 +3,11 @@ package net.torocraft.torohud.events;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -13,6 +16,13 @@ import net.torocraft.torohud.network.MessageLivingHurt;
 
 @Mod.EventBusSubscriber()
 public class Events {
+
+  @SubscribeEvent
+  public static void onConfigChanged(OnConfigChangedEvent event){
+    if(event.getModID().equals(ToroHUD.MODID)){
+      ConfigManager.sync(ToroHUD.MODID, Type.INSTANCE);
+    }
+  }
 
   @SubscribeEvent
   public static void displayDamage(LivingDamageEvent event) {

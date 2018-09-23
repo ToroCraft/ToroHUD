@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -12,6 +13,12 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -19,14 +26,17 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.torohud.ToroHUD;
-import net.torocraft.torohud.config.ConfigurationHandler;
 import net.torocraft.torohud.display.AbstractEntityDisplay;
+import net.torocraft.torohud.gui.HealthBars.Conf.Mode;
 import org.lwjgl.opengl.GL11;
+
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class HealthBars {
@@ -37,24 +47,38 @@ public class HealthBars {
   private static final float HEALTH_ANIMATION_SPEED = 0.08f;
 
   private static final int GREEN = 0x00FF00FF;
+  private static final int DARK_GREEN = 0x008000FF;
   private static final int YELLOW = 0xFFFF00FF;
   private static final int WHITE = 0xFFFFFFFF;
   private static final int RED = 0xFF0000FF;
-  private static final int DARK_GRAY = 0x505050FF;
+  private static final int DARK_RED = 0x800000FF;
+  private static final int DARK_GRAY = 0x808080FF;
   private static final float zLevel = 0;
 
   private static final int DISPLAY_BAR_RADIUS = 60;
   private static final int DISPLAY_BAR_DIAMETER = DISPLAY_BAR_RADIUS * 2;
 
-
   private static final float VERTICAL_MARGIN = 0.35f;
   private static final double FULL_SIZE = 40;
   private static final double HALF_SIZE = FULL_SIZE / 2;
   private static final float SCALE = 0.03f;
+  private static final Map<Integer, State> states = new HashMap<>();
+
+  private static boolean holdingWeapon = false;
+  private static long tickCount = 0;
+
+  @Config(modid = ToroHUD.MODID, name = "Health Bar Settings")
+  public static class Conf {
+
+    public enum Mode {NONE, WHEN_HOLDING_WEAPON, ALWAYS}
+
+    @Name("Show Bars Above Entities")
+    public static Mode showBarsAboveEntities = Mode.WHEN_HOLDING_WEAPON;
+  }
 
   @SubscribeEvent
   public static void onRenderWorldLast(RenderWorldLastEvent event) {
-    if (ConfigurationHandler.showBarsAboveEntities) {
+    if (shouldShowEntityBars()) {
       Minecraft mc = Minecraft.getMinecraft();
       Entity viewer = mc.getRenderViewEntity();
       BlockPos pos = new BlockPos(viewer).subtract(new Vec3i(DISPLAY_BAR_RADIUS, DISPLAY_BAR_RADIUS, DISPLAY_BAR_RADIUS));
@@ -64,22 +88,59 @@ public class HealthBars {
     }
   }
 
+  public static boolean shouldShowEntityBars() {
+    if (Conf.showBarsAboveEntities.equals(Mode.ALWAYS)) {
+      return true;
+    }
+    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HOLDING_WEAPON)) {
+      return holdingWeapon;
+    }
+    return false;
+  }
+
+
   private static class State {
+
     private float previousHealth;
     private float previousHealthDisplay;
     private float previousHealthDelay;
   }
 
-  private static final Map<Integer, State> states = new HashMap<>();
-
 
   @SubscribeEvent
-  public static void cleanup(WorldTickEvent event) {
-    World world = event.world;
-    if (world.getTotalWorldTime() % 500 == 0) {
+  public static void cleanup(ClientTickEvent event) {
+    WorldClient world = Minecraft.getMinecraft().world;
+
+    if (world == null) {
+      return;
+    }
+
+    if (tickCount % 500 == 0) {
       states.entrySet().removeIf(e -> stateExpired(world, e.getKey(), e.getValue()));
     }
+
+    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HOLDING_WEAPON) && tickCount % 10 == 0) {
+      updateEquipment();
+    }
+
+    tickCount++;
   }
+
+  public static void updateEquipment() {
+    EntityPlayer player = Minecraft.getMinecraft().player;
+    if (player == null) {
+      holdingWeapon = false;
+      return;
+    }
+    ItemStack item = player.getHeldItem(EnumHand.MAIN_HAND);
+    ItemStack item2 = player.getHeldItem(EnumHand.OFF_HAND);
+    holdingWeapon = isWeapon(item) || isWeapon(item2);
+  }
+
+  private static boolean isWeapon(ItemStack item) {
+    return item.getItem() instanceof ItemSword || item.getItem() instanceof ItemBow || item.getItem() instanceof ItemPotion;
+  }
+
 
   private static boolean stateExpired(World world, int id, State state) {
     if (state == null) {
@@ -137,13 +198,15 @@ public class HealthBars {
     }
 
     int color = determineColor(entity);
+    int color2 = color == RED ? DARK_RED : DARK_GREEN;
+
     float percent = entity.getHealth() / entity.getMaxHealth();
     float percent2 = state.previousHealthDisplay / entity.getMaxHealth();
     int zOffset = 0;
     y += entity.height;
 
     drawBar(gui, x, y, z, 1, DARK_GRAY, zOffset++);
-    drawBar(gui, x, y, z, percent2, WHITE, zOffset++);
+    drawBar(gui, x, y, z, percent2, color2, zOffset++);
     drawBar(gui, x, y, z, percent, color, zOffset++);
     drawDamageNumber(state, entity, gui, x, y, z, zOffset);
   }
@@ -160,7 +223,7 @@ public class HealthBars {
     int sw = Minecraft.getMinecraft().fontRenderer.getStringWidth(s);
 
     if (gui != null) {
-      Minecraft.getMinecraft().fontRenderer.drawString(s, ((int)x + 92) - sw, (int)y + 6, 0xC0C0C0);
+      Minecraft.getMinecraft().fontRenderer.drawString(s, ((int) x + 92) - sw, (int) y + 6, 0xd00000);
     }
   }
 
@@ -201,7 +264,6 @@ public class HealthBars {
 
     restoreGlState(lighting);
   }
-
 
 
   private static boolean setupGlStateForInWorldRender(double x, double y, double z, int zOffset, RenderManager renderManager) {

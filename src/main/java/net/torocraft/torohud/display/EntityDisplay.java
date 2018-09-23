@@ -10,7 +10,11 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.Name;
+import net.torocraft.torohud.ToroHUD;
 
+@Config(modid = ToroHUD.MODID, name = "Entity Display Settings")
 public class EntityDisplay implements IDisplay {
 
   private static final int RENDER_HEIGHT = 30;
@@ -32,6 +36,9 @@ public class EntityDisplay implements IDisplay {
   private float prevYawHead;
   private float prevPrevYahHead;
   private int scale = 1;
+
+  @Name("Show 3D Model of Entity")
+  public static boolean showEntityModel = true; // config.getBoolean("Show 3D Model of Entity", Configuration.CATEGORY_CLIENT, true, "Shows a 3D model of the entity being targeted");
 
   public EntityDisplay(Minecraft mc) {
   }

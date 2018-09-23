@@ -76,7 +76,7 @@ public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
       String duration = Potion.getPotionDurationString(potion, 1.0F);
       mc.fontRenderer.drawStringWithShadow(duration, x, y + 18, 0xe0e0e0);
 
-      mc.fontRenderer.drawStringWithShadow( getAmplifierText(potion), x, y, 0xc0c0c0);
+      mc.fontRenderer.drawStringWithShadow(getAmplifierText(potion), x, y, 0xc0c0c0);
 
       x += 24;
     }
