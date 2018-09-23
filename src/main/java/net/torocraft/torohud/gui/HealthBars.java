@@ -47,7 +47,7 @@ public class HealthBars {
 
   private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation(ToroHUD.MODID, "textures/gui/bars.png");
 
-  private static final float HEALTH_INDICATOR_DELAY = 60;
+  private static final float HEALTH_INDICATOR_DELAY = 80;
   private static final float HEALTH_ANIMATION_SPEED = 0.08f;
 
   private static final int GREEN = 0x00FF00FF;
@@ -74,7 +74,7 @@ public class HealthBars {
   @Config(modid = ToroHUD.MODID, name = "Health Bar Settings")
   public static class Conf {
 
-    public enum Mode {NONE, WHEN_HOLDING_WEAPON, ALWAYS}
+    public enum Mode {NONE, WHEN_HOLDING_WEAPON, ALWAYS, WHEN_HURT, WHEN_HURT_TEMP}
 
     public enum NumberType {NONE, LAST, CUMULATIVE}
 
@@ -92,7 +92,7 @@ public class HealthBars {
 
   @SubscribeEvent
   public static void onRenderWorldLast(RenderWorldLastEvent event) {
-    if (shouldShowEntityBars()) {
+    if (!barsAreCurrentlyDisabled()) {
       Minecraft mc = Minecraft.getMinecraft();
       Entity viewer = mc.getRenderViewEntity();
       BlockPos pos = new BlockPos(viewer).subtract(new Vec3i(DISPLAY_BAR_RADIUS, DISPLAY_BAR_RADIUS, DISPLAY_BAR_RADIUS));
@@ -102,18 +102,20 @@ public class HealthBars {
     }
   }
 
-  public static boolean shouldShowEntityBars() {
+  public static boolean barsAreCurrentlyDisabled() {
     if (Conf.showBarsAboveEntities.equals(Mode.ALWAYS)) {
-      return true;
+      return false;
     }
     if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HOLDING_WEAPON)) {
-      return holdingWeapon;
+      return !holdingWeapon;
     }
     return false;
   }
 
 
   private static class State {
+
+    private float showOnHurtDelay;
 
     private float previousHealth;
     private float previousHealthDisplay;
@@ -199,6 +201,9 @@ public class HealthBars {
     if (!EntityUtil.whiteListedEntity(entity) || entity == Minecraft.getMinecraft().player) {
       return;
     }
+    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HURT) && entity.getHealth() >= entity.getMaxHealth()) {
+      return;
+    }
     double x = entity.lastTickPosX + ((entity.posX - entity.lastTickPosX) * partialTicks);
     double y = entity.lastTickPosY + ((entity.posY - entity.lastTickPosY) * partialTicks);
     double z = entity.lastTickPosZ + ((entity.posZ - entity.lastTickPosZ) * partialTicks);
@@ -212,13 +217,14 @@ public class HealthBars {
   private static void drawEntityHealthBar(EntityLivingBase entity, double x, double y, double z, Gui gui) {
     State state = getState(entity);
 
-    if (state.lastHealth < 1) {
+    if (state.lastHealth < 0.1) {
       state.lastHealth = entity.getHealth();
+      state.lastDmg = 0;
     } else if (state.lastHealth != entity.getHealth()) {
       state.lastDmg = state.lastHealth - entity.getHealth();
-      state.lastDmgDelay = HEALTH_INDICATOR_DELAY;
+      state.lastDmgDelay = HEALTH_INDICATOR_DELAY * 2;
       state.lastHealth = entity.getHealth();
-    } else if (state.lastDmgDelay > 0) {
+    } else if (state.lastDmgDelay > -1) {
       state.lastDmgDelay--;
     } else {
       state.lastHealth = entity.getHealth();
@@ -233,6 +239,10 @@ public class HealthBars {
       state.previousHealthDisplay = entity.getHealth();
       state.previousHealth = entity.getHealth();
       state.previousHealthDelay = HEALTH_INDICATOR_DELAY;
+    }
+
+    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HURT_TEMP) && gui == null && state.lastDmg == 0) {
+      return;
     }
 
     int color = determineColor(entity);
