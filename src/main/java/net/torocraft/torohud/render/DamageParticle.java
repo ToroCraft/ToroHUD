@@ -25,7 +25,6 @@ public class DamageParticle extends Particle {
   protected static final double BOUNCE_STRENGTH = 1.5F;
 
   protected String text;
-  protected boolean shouldOnTop = true;
   protected boolean grow = true;
   protected float scale = 1.0F;
   private int damage;
@@ -41,6 +40,9 @@ public class DamageParticle extends Particle {
 
     @Name("Damage Color")
     public static Color damageColor = Color.RED;
+
+    @Name("Visible Throw Walls")
+    public static boolean visibleThroughWalls = false;
   }
 
   public static void displayParticle(Entity entity, int damage) {
@@ -86,7 +88,7 @@ public class DamageParticle extends Particle {
     final float locZ = ((float) (this.prevPosZ + (this.posZ - this.prevPosZ) * z - interpPosZ));
 
     GL11.glPushMatrix();
-    if (this.shouldOnTop) {
+    if (Conf.visibleThroughWalls) {
       GL11.glDepthFunc(519);
     } else {
       GL11.glDepthFunc(515);
