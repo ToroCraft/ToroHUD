@@ -18,7 +18,7 @@ import net.torocraft.torohud.proxy.CommonProxy;
 public class ToroHUD {
 
   public static final String MODID = "torohud";
-  public static final String VERSION = "1.12.2-2";
+  public static final String VERSION = "1.12.2-3";
   public static final String MODNAME = "ToroHUD";
 
   @SidedProxy(clientSide = "net.torocraft.torohud.proxy.ClientProxy", serverSide = "net.torocraft.torohud.proxy.ServerProxy")
@@ -34,9 +34,6 @@ public class ToroHUD {
   @EventHandler
   public void preInit(FMLPreInitializationEvent e) {
     PROXY.preInit(e);
-
-    //ConfigurationHandler.init(e.getSuggestedConfigurationFile());
-    //MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
   }
 
   @EventHandler
