@@ -18,8 +18,12 @@ public class HealthBarsConf {
   @Name("Show Bars Above Entities")
   public static Mode showBarsAboveEntities = Mode.WHEN_HOLDING_WEAPON;
 
-  @Name("Damage Number Type")
-  public static NumberType numberType = NumberType.LAST;
+  @Name("Distance")
+  public static float distance = 60f;
+
+  @Name("Hide Delay")
+  @Comment("Delays hiding the health bar for the given number of milliseconds")
+  public static int hideDelay = 0;
 
   @Name("Additional Weapons")
   @Comment("When using WHEN_HOLDING_WEAPON to show entity bars, more items can be added here to be treated as weapons.")

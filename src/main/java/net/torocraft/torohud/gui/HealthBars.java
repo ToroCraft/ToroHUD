@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.torohud.ToroHUD;
+import net.torocraft.torohud.conf.HealthBarGuiConf;
 import net.torocraft.torohud.conf.HealthBarsConf;
 import net.torocraft.torohud.display.AbstractEntityDisplay;
 import net.torocraft.torohud.util.EntityUtil;
@@ -55,9 +56,6 @@ public class HealthBars {
   private static final int DARK_GRAY = 0x808080FF;
   private static final float zLevel = 0;
 
-  private static final int DISPLAY_BAR_RADIUS = 60;
-  private static final int DISPLAY_BAR_DIAMETER = DISPLAY_BAR_RADIUS * 2;
-
   private static final float VERTICAL_MARGIN = 0.35f;
   private static final double FULL_SIZE = 40;
   private static final double HALF_SIZE = FULL_SIZE / 2;
@@ -72,8 +70,9 @@ public class HealthBars {
     if (!barsAreCurrentlyDisabled()) {
       Minecraft mc = Minecraft.getMinecraft();
       Entity viewer = mc.getRenderViewEntity();
-      BlockPos pos = new BlockPos(viewer).subtract(new Vec3i(DISPLAY_BAR_RADIUS, DISPLAY_BAR_RADIUS, DISPLAY_BAR_RADIUS));
-      AxisAlignedBB box = new AxisAlignedBB(pos).expand(DISPLAY_BAR_DIAMETER, DISPLAY_BAR_DIAMETER, DISPLAY_BAR_DIAMETER);
+      double diameter = HealthBarsConf.distance * 2;
+      BlockPos pos = new BlockPos(viewer).subtract(new Vec3i(HealthBarsConf.distance, HealthBarsConf.distance, HealthBarsConf.distance));
+      AxisAlignedBB box = new AxisAlignedBB(pos).expand(diameter, diameter, diameter);
       List<EntityLivingBase> entities = mc.world.getEntitiesWithinAABB(EntityLivingBase.class, box);
       entities.forEach(e -> HealthBars.drawEntityHealthBarInWorld(e, event.getPartialTicks()));
     }
@@ -233,9 +232,9 @@ public class HealthBars {
     drawBar(gui, x, y, z, 1, DARK_GRAY, zOffset++);
     drawBar(gui, x, y, z, percent2, color2, zOffset++);
     drawBar(gui, x, y, z, percent, color, zOffset++);
-    if (HealthBarsConf.numberType.equals(HealthBarsConf.NumberType.CUMULATIVE)) {
+    if (HealthBarGuiConf.numberType.equals(HealthBarsConf.NumberType.CUMULATIVE)) {
       drawDamageNumber(state.previousHealth - entity.getHealth(), entity, gui, x, y, z, zOffset);
-    } else if (HealthBarsConf.numberType.equals(HealthBarsConf.NumberType.LAST)) {
+    } else if (HealthBarGuiConf.numberType.equals(HealthBarsConf.NumberType.LAST)) {
       drawDamageNumber(state.lastDmg, entity, gui, x, y, z, zOffset);
     }
   }

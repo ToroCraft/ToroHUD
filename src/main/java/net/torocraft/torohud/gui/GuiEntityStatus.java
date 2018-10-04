@@ -56,10 +56,13 @@ public class GuiEntityStatus extends Gui {
     if (HealthBarGuiConf.disableGui || !showHealthBar || event.getType() != ElementType.CHAT) {
       return;
     }
+    GlStateManager.pushMatrix();
+    GlStateManager.scale(HealthBarGuiConf.scale, HealthBarGuiConf.scale, HealthBarGuiConf.scale);
     updateGuiAge();
     updatePositions();
     drawSkin();
     draw();
+    GlStateManager.popMatrix();
   }
 
   private void drawSkin() {

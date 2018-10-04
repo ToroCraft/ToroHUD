@@ -12,11 +12,10 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.torohud.conf.HealthBarGuiConf;
 
 @SideOnly(Side.CLIENT)
 public class RayTrace {
-
-  private static final int LOOK_DISTANCE = 50;
 
   private static Minecraft mc = Minecraft.getMinecraft();
 
@@ -50,7 +49,7 @@ public class RayTrace {
     }
 
     mc.pointedEntity = null;
-    double reachDistance = LOOK_DISTANCE;
+    double reachDistance = HealthBarGuiConf.distance;
 
     objectMouseOver = rayTrace(observer, reachDistance, partialTicks);
 
