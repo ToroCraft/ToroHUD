@@ -26,17 +26,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.Config.Comment;
-import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.torohud.ToroHUD;
+import net.torocraft.torohud.conf.HealthBarsConf;
 import net.torocraft.torohud.display.AbstractEntityDisplay;
-import net.torocraft.torohud.gui.HealthBars.Conf.Mode;
-import net.torocraft.torohud.gui.HealthBars.Conf.NumberType;
 import net.torocraft.torohud.util.EntityUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
@@ -71,25 +67,6 @@ public class HealthBars {
   private static boolean holdingWeapon = false;
   private static long tickCount = 0;
 
-  @Config(modid = ToroHUD.MODID, name = "Health Bar Settings")
-  public static class Conf {
-
-    public enum Mode {NONE, WHEN_HOLDING_WEAPON, ALWAYS, WHEN_HURT, WHEN_HURT_TEMP}
-
-    public enum NumberType {NONE, LAST, CUMULATIVE}
-
-    @Name("Show Bars Above Entities")
-    public static Mode showBarsAboveEntities = Mode.WHEN_HOLDING_WEAPON;
-
-    @Name("Damage Number Type")
-    public static NumberType numberType = NumberType.LAST;
-
-    @Name("Additional Weapons")
-    @Comment("When using WHEN_HOLDING_WEAPON to show entity bars, more items can be added here to be treated as weapons.")
-    public static String[] additionalWeaponItems = {};
-
-  }
-
   @SubscribeEvent
   public static void onRenderWorldLast(RenderWorldLastEvent event) {
     if (!barsAreCurrentlyDisabled()) {
@@ -103,10 +80,10 @@ public class HealthBars {
   }
 
   public static boolean barsAreCurrentlyDisabled() {
-    if (Conf.showBarsAboveEntities.equals(Mode.ALWAYS)) {
+    if (HealthBarsConf.showBarsAboveEntities.equals(HealthBarsConf.Mode.ALWAYS)) {
       return false;
     }
-    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HOLDING_WEAPON)) {
+    if (HealthBarsConf.showBarsAboveEntities.equals(HealthBarsConf.Mode.WHEN_HOLDING_WEAPON)) {
       return !holdingWeapon;
     }
     return false;
@@ -139,7 +116,7 @@ public class HealthBars {
       states.entrySet().removeIf(e -> stateExpired(world, e.getKey(), e.getValue()));
     }
 
-    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HOLDING_WEAPON) && tickCount % 10 == 0) {
+    if (HealthBarsConf.showBarsAboveEntities.equals(HealthBarsConf.Mode.WHEN_HOLDING_WEAPON) && tickCount % 10 == 0) {
       updateEquipment();
     }
 
@@ -166,7 +143,7 @@ public class HealthBars {
 
   private static boolean isInWeaponWhiteList(ItemStack item) {
     String itemName = item.getItem().getUnlocalizedName();
-    return ArrayUtils.contains(Conf.additionalWeaponItems, itemName);
+    return ArrayUtils.contains(HealthBarsConf.additionalWeaponItems, itemName);
   }
 
   private static boolean stateExpired(World world, int id, State state) {
@@ -201,7 +178,7 @@ public class HealthBars {
     if (!EntityUtil.whiteListedEntity(entity) || entity == Minecraft.getMinecraft().player) {
       return;
     }
-    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HURT) && entity.getHealth() >= entity.getMaxHealth()) {
+    if (HealthBarsConf.showBarsAboveEntities.equals(HealthBarsConf.Mode.WHEN_HURT) && entity.getHealth() >= entity.getMaxHealth()) {
       return;
     }
     double x = entity.lastTickPosX + ((entity.posX - entity.lastTickPosX) * partialTicks);
@@ -241,7 +218,7 @@ public class HealthBars {
       state.previousHealthDelay = HEALTH_INDICATOR_DELAY;
     }
 
-    if (Conf.showBarsAboveEntities.equals(Mode.WHEN_HURT_TEMP) && gui == null && state.lastDmg == 0) {
+    if (HealthBarsConf.showBarsAboveEntities.equals(HealthBarsConf.Mode.WHEN_HURT_TEMP) && gui == null && state.lastDmg == 0) {
       return;
     }
 
@@ -256,9 +233,9 @@ public class HealthBars {
     drawBar(gui, x, y, z, 1, DARK_GRAY, zOffset++);
     drawBar(gui, x, y, z, percent2, color2, zOffset++);
     drawBar(gui, x, y, z, percent, color, zOffset++);
-    if (Conf.numberType.equals(NumberType.CUMULATIVE)) {
+    if (HealthBarsConf.numberType.equals(HealthBarsConf.NumberType.CUMULATIVE)) {
       drawDamageNumber(state.previousHealth - entity.getHealth(), entity, gui, x, y, z, zOffset);
-    } else if (Conf.numberType.equals(NumberType.LAST)) {
+    } else if (HealthBarsConf.numberType.equals(HealthBarsConf.NumberType.LAST)) {
       drawDamageNumber(state.lastDmg, entity, gui, x, y, z, zOffset);
     }
   }

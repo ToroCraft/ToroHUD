@@ -8,11 +8,10 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.torohud.ToroHUD;
+import net.torocraft.torohud.conf.ParticlesConf;
+import net.torocraft.torohud.conf.ParticlesConf.Color;
 import org.lwjgl.opengl.GL11;
 
 
@@ -29,24 +28,8 @@ public class DamageParticle extends Particle {
   protected float scale = 1.0F;
   private int damage;
 
-  @Config(modid = ToroHUD.MODID, name = "Damage Particles")
-  public static class Conf {
-
-    @Name("Show Damage Particles")
-    public static boolean showDamageParticles = true;
-
-    @Name("Heal Color")
-    public static Color healColor = Color.GREEN;
-
-    @Name("Damage Color")
-    public static Color damageColor = Color.RED;
-
-    @Name("Visible Throw Walls")
-    public static boolean visibleThroughWalls = false;
-  }
-
   public static void displayParticle(Entity entity, int damage) {
-    if (!Conf.showDamageParticles) {
+    if (!ParticlesConf.showDamageParticles) {
       return;
     }
     if (damage == 0) {
@@ -88,7 +71,7 @@ public class DamageParticle extends Particle {
     final float locZ = ((float) (this.prevPosZ + (this.posZ - this.prevPosZ) * z - interpPosZ));
 
     GL11.glPushMatrix();
-    if (Conf.visibleThroughWalls) {
+    if (ParticlesConf.visibleThroughWalls) {
       GL11.glDepthFunc(519);
     } else {
       GL11.glDepthFunc(515);
@@ -114,9 +97,9 @@ public class DamageParticle extends Particle {
     GL11.glEnable(3008);
     GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-    Color color = Conf.damageColor;
+    Color color = ParticlesConf.damageColor;
     if (damage < 0) {
-      color = Conf.healColor;
+      color = ParticlesConf.healColor;
     }
 
     final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
@@ -140,8 +123,6 @@ public class DamageParticle extends Particle {
   public int getFXLayer() {
     return 3;
   }
-
-  public enum Color {RED, GREEN, BLUE, YELLOW, ORANGE, BLACK, PURPLE}
 
   private static int mapColor(Color color) {
     switch (color) {
