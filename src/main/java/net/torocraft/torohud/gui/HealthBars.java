@@ -33,6 +33,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.torohud.ToroHUD;
 import net.torocraft.torohud.conf.HealthBarGuiConf;
 import net.torocraft.torohud.conf.HealthBarsConf;
+import net.torocraft.torohud.conf.HealthBarsConf.Mode;
 import net.torocraft.torohud.display.AbstractEntityDisplay;
 import net.torocraft.torohud.util.EntityUtil;
 import org.apache.commons.lang3.ArrayUtils;
@@ -79,10 +80,13 @@ public class HealthBars {
   }
 
   public static boolean barsAreCurrentlyDisabled() {
-    if (HealthBarsConf.showBarsAboveEntities.equals(HealthBarsConf.Mode.ALWAYS)) {
+    if (HealthBarsConf.showBarsAboveEntities.equals(Mode.ALWAYS)) {
       return false;
     }
-    if (HealthBarsConf.showBarsAboveEntities.equals(HealthBarsConf.Mode.WHEN_HOLDING_WEAPON)) {
+    if (HealthBarsConf.showBarsAboveEntities.equals(Mode.NONE)) {
+      return true;
+    }
+    if (HealthBarsConf.showBarsAboveEntities.equals(Mode.WHEN_HOLDING_WEAPON)) {
       return !holdingWeapon;
     }
     return false;
