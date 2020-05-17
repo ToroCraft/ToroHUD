@@ -67,6 +67,14 @@ public class HealthBarGuiConf {
   @Name("Armor Y Offset")
   public static int armorYOffset = 0;
 
+  // Potion Config
+  @Name("Potion X Offset")
+  public static int potionXOffset = 0;
+
+  @Name("Potion Y Offset")
+  public static int potionYOffset = 0;
+
+
   // Overall GUI Config
   @Name("Disable GUI")
   public static boolean disableGui = false;
@@ -76,7 +84,6 @@ public class HealthBarGuiConf {
 
   @Name("Y Offset")
   public static int yOffset = 0;
-
   @Name("GUI Position")
   public static GuiAnchor guiPosition = GuiAnchor.TOP_LEFT;
 
