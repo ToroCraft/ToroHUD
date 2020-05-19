@@ -10,6 +10,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.torohud.network.MessageEntityStatsResponse;
+import net.torocraft.torohud.conf.HealthBarGuiConf;
 
 public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
 
@@ -62,8 +63,8 @@ public class PotionDisplay extends AbstractEntityDisplay implements IDisplay {
     }
 
     int index = 0;
-    int x = this.x + X_OFFSET;
-    int y = this.y + Y_OFFSET;
+    int x = this.x + X_OFFSET + HealthBarGuiConf.potionXOffset;
+    int y = this.y + Y_OFFSET + HealthBarGuiConf.potionYOffset;
 
     for (PotionEffect potion : Ordering.natural().sortedCopy(potions)) {
 

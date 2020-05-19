@@ -24,6 +24,58 @@ public class HealthBarGuiConf {
   @Name("Show 3D Model of Entity")
   public static boolean showEntityModel = true; // config.getBoolean("Show 3D Model of Entity", Configuration.CATEGORY_CLIENT, true, "Shows a 3D model of the entity being targeted");
 
+  // Health Config
+  @Name("Hide Health Number")
+  @Comment("Hide the health number")
+  public static boolean hideHealthNo = false;
+
+  @Name("Health Number X Offset")
+  public static int healthNoXOffset = 0;
+
+  @Name("Health Number Y Offset")
+  public static int healthNoYOffset = 0;
+
+  @Name("Health Bar X Offset")
+  public static int healthXOffset = 0;
+
+  @Name("Health Bar Y Offset")
+  public static int healthYOffset = 0;
+
+  @Name("Health Bar Scale")
+  public static float healthScale = 1f;
+
+  // Nameplate Config
+  @Name("Hide Nameplate")
+  public static boolean hideName = false;
+
+  @Name("Nameplate X Offset")
+  public static int nameXOffset = 0;
+
+  @Name("Nameplate Y Offset")
+  public static int nameYOffset = 0;
+
+  @Name("Nameplate Scale")
+  public static float nameScale = 1f;
+
+  // Armor Config
+  @Name("Hide Armor")
+  public static boolean hideArmor = false;
+
+  @Name("Armor X Offset")
+  public static int armorXOffset = 0;
+
+  @Name("Armor Y Offset")
+  public static int armorYOffset = 0;
+
+  // Potion Config
+  @Name("Potion X Offset")
+  public static int potionXOffset = 0;
+
+  @Name("Potion Y Offset")
+  public static int potionYOffset = 0;
+
+
+  // Overall GUI Config
   @Name("Disable GUI")
   public static boolean disableGui = false;
 
@@ -32,7 +84,6 @@ public class HealthBarGuiConf {
 
   @Name("Y Offset")
   public static int yOffset = 0;
-
   @Name("GUI Position")
   public static GuiAnchor guiPosition = GuiAnchor.TOP_LEFT;
 
